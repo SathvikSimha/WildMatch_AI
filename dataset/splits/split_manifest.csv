@@ -1,0 +1,201 @@
+photo_id,image_id,species,split,image_path
+525975453,tiger_525975453,Tiger,train,dataset/curated/tiger/tiger_525975453.jpg
+630025225,tiger_630025225,Tiger,train,dataset/curated/tiger/tiger_630025225.jpg
+624564746,tiger_624564746,Tiger,train,dataset/curated/tiger/tiger_624564746.jpg
+681917910,tiger_681917910,Tiger,train,dataset/curated/tiger/tiger_681917910.jpg
+612404986,tiger_612404986,Tiger,train,dataset/curated/tiger/tiger_612404986.jpg
+690211361,tiger_690211361,Tiger,train,dataset/curated/tiger/tiger_690211361.jpg
+624391457,tiger_624391457,Tiger,train,dataset/curated/tiger/tiger_624391457.jpg
+622360935,tiger_622360935,Tiger,train,dataset/curated/tiger/tiger_622360935.jpg
+624580115,tiger_624580115,Tiger,train,dataset/curated/tiger/tiger_624580115.jpg
+617669879,tiger_617669879,Tiger,train,dataset/curated/tiger/tiger_617669879.jpg
+525974992,tiger_525974992,Tiger,train,dataset/curated/tiger/tiger_525974992.jpg
+486732261,tiger_486732261,Tiger,train,dataset/curated/tiger/tiger_486732261.jpg
+627762422,tiger_627762422,Tiger,train,dataset/curated/tiger/tiger_627762422.jpg
+487071031,tiger_487071031,Tiger,train,dataset/curated/tiger/tiger_487071031.jpg
+479571386,tiger_479571386,Tiger,train,dataset/curated/tiger/tiger_479571386.jpg
+486733395,tiger_486733395,Tiger,train,dataset/curated/tiger/tiger_486733395.jpg
+630392164,tiger_630392164,Tiger,train,dataset/curated/tiger/tiger_630392164.jpg
+681917925,tiger_681917925,Tiger,train,dataset/curated/tiger/tiger_681917925.jpg
+690211270,tiger_690211270,Tiger,train,dataset/curated/tiger/tiger_690211270.jpg
+549685309,tiger_549685309,Tiger,train,dataset/curated/tiger/tiger_549685309.jpg
+487071949,tiger_487071949,Tiger,train,dataset/curated/tiger/tiger_487071949.jpg
+595154498,tiger_595154498,Tiger,train,dataset/curated/tiger/tiger_595154498.jpg
+617677964,tiger_617677964,Tiger,train,dataset/curated/tiger/tiger_617677964.jpg
+626977597,tiger_626977597,Tiger,train,dataset/curated/tiger/tiger_626977597.jpg
+624579388,tiger_624579388,Tiger,train,dataset/curated/tiger/tiger_624579388.jpg
+457154442,tiger_457154442,Tiger,train,dataset/curated/tiger/tiger_457154442.jpg
+681917905,tiger_681917905,Tiger,train,dataset/curated/tiger/tiger_681917905.jpg
+624497424,tiger_624497424,Tiger,train,dataset/curated/tiger/tiger_624497424.jpg
+624943494,tiger_624943494,Tiger,train,dataset/curated/tiger/tiger_624943494.jpg
+486732740,tiger_486732740,Tiger,train,dataset/curated/tiger/tiger_486732740.jpg
+624564730,tiger_624564730,Tiger,train,dataset/curated/tiger/tiger_624564730.jpg
+500107703,tiger_500107703,Tiger,train,dataset/curated/tiger/tiger_500107703.jpg
+627006766,tiger_627006766,Tiger,train,dataset/curated/tiger/tiger_627006766.jpg
+478262477,tiger_478262477,Tiger,train,dataset/curated/tiger/tiger_478262477.jpg
+617677492,tiger_617677492,Tiger,train,dataset/curated/tiger/tiger_617677492.jpg
+479540642,tiger_479540642,Tiger,validation,dataset/curated/tiger/tiger_479540642.jpg
+681917887,tiger_681917887,Tiger,validation,dataset/curated/tiger/tiger_681917887.jpg
+627006386,tiger_627006386,Tiger,validation,dataset/curated/tiger/tiger_627006386.jpg
+617677685,tiger_617677685,Tiger,validation,dataset/curated/tiger/tiger_617677685.jpg
+630392142,tiger_630392142,Tiger,validation,dataset/curated/tiger/tiger_630392142.jpg
+499392387,tiger_499392387,Tiger,validation,dataset/curated/tiger/tiger_499392387.jpg
+617677558,tiger_617677558,Tiger,validation,dataset/curated/tiger/tiger_617677558.jpg
+617669503,tiger_617669503,Tiger,test,dataset/curated/tiger/tiger_617669503.jpg
+759553570,tiger_759553570,Tiger,test,dataset/curated/tiger/tiger_759553570.jpg
+617670882,tiger_617670882,Tiger,test,dataset/curated/tiger/tiger_617670882.jpg
+487070350,tiger_487070350,Tiger,test,dataset/curated/tiger/tiger_487070350.jpg
+681509691,tiger_681509691,Tiger,test,dataset/curated/tiger/tiger_681509691.jpg
+525975521,tiger_525975521,Tiger,test,dataset/curated/tiger/tiger_525975521.jpg
+624564461,tiger_624564461,Tiger,test,dataset/curated/tiger/tiger_624564461.jpg
+628598649,tiger_628598649,Tiger,test,dataset/curated/tiger/tiger_628598649.jpg
+722417719,lion_722417719,Lion,train,dataset/curated/lion/lion_722417719.jpg
+744534708,lion_744534708,Lion,train,dataset/curated/lion/lion_744534708.jpg
+670103321,lion_670103321,Lion,train,dataset/curated/lion/lion_670103321.jpg
+756058598,lion_756058598,Lion,train,dataset/curated/lion/lion_756058598.jpg
+756058585,lion_756058585,Lion,train,dataset/curated/lion/lion_756058585.jpg
+744543148,lion_744543148,Lion,train,dataset/curated/lion/lion_744543148.jpg
+721690002,lion_721690002,Lion,train,dataset/curated/lion/lion_721690002.jpg
+755356722,lion_755356722,Lion,train,dataset/curated/lion/lion_755356722.jpg
+715852818,lion_715852818,Lion,train,dataset/curated/lion/lion_715852818.jpg
+659698340,lion_659698340,Lion,train,dataset/curated/lion/lion_659698340.jpg
+719839573,lion_719839573,Lion,train,dataset/curated/lion/lion_719839573.jpg
+722478839,lion_722478839,Lion,train,dataset/curated/lion/lion_722478839.jpg
+756403166,lion_756403166,Lion,train,dataset/curated/lion/lion_756403166.jpg
+737543921,lion_737543921,Lion,train,dataset/curated/lion/lion_737543921.jpg
+720177765,lion_720177765,Lion,train,dataset/curated/lion/lion_720177765.jpg
+689990591,lion_689990591,Lion,train,dataset/curated/lion/lion_689990591.jpg
+722036248,lion_722036248,Lion,train,dataset/curated/lion/lion_722036248.jpg
+726258851,lion_726258851,Lion,train,dataset/curated/lion/lion_726258851.jpg
+716133281,lion_716133281,Lion,train,dataset/curated/lion/lion_716133281.jpg
+722963689,lion_722963689,Lion,train,dataset/curated/lion/lion_722963689.jpg
+720176804,lion_720176804,Lion,train,dataset/curated/lion/lion_720176804.jpg
+722036229,lion_722036229,Lion,train,dataset/curated/lion/lion_722036229.jpg
+722065627,lion_722065627,Lion,train,dataset/curated/lion/lion_722065627.jpg
+750862335,lion_750862335,Lion,train,dataset/curated/lion/lion_750862335.jpg
+717172021,lion_717172021,Lion,train,dataset/curated/lion/lion_717172021.jpg
+719032902,lion_719032902,Lion,train,dataset/curated/lion/lion_719032902.jpg
+744543178,lion_744543178,Lion,train,dataset/curated/lion/lion_744543178.jpg
+749502612,lion_749502612,Lion,train,dataset/curated/lion/lion_749502612.jpg
+715689076,lion_715689076,Lion,train,dataset/curated/lion/lion_715689076.jpg
+743309128,lion_743309128,Lion,train,dataset/curated/lion/lion_743309128.jpg
+715853332,lion_715853332,Lion,train,dataset/curated/lion/lion_715853332.jpg
+756345610,lion_756345610,Lion,train,dataset/curated/lion/lion_756345610.jpg
+719558282,lion_719558282,Lion,train,dataset/curated/lion/lion_719558282.jpg
+722368784,lion_722368784,Lion,train,dataset/curated/lion/lion_722368784.jpg
+743886790,lion_743886790,Lion,train,dataset/curated/lion/lion_743886790.jpg
+700957477,lion_700957477,Lion,validation,dataset/curated/lion/lion_700957477.jpg
+756345474,lion_756345474,Lion,validation,dataset/curated/lion/lion_756345474.jpg
+686451927,lion_686451927,Lion,validation,dataset/curated/lion/lion_686451927.jpg
+743309060,lion_743309060,Lion,validation,dataset/curated/lion/lion_743309060.jpg
+719503450,lion_719503450,Lion,validation,dataset/curated/lion/lion_719503450.jpg
+716133331,lion_716133331,Lion,validation,dataset/curated/lion/lion_716133331.jpg
+740219079,lion_740219079,Lion,validation,dataset/curated/lion/lion_740219079.jpg
+715183642,lion_715183642,Lion,validation,dataset/curated/lion/lion_715183642.jpg
+751724227,lion_751724227,Lion,test,dataset/curated/lion/lion_751724227.jpg
+701193248,lion_701193248,Lion,test,dataset/curated/lion/lion_701193248.jpg
+722223161,lion_722223161,Lion,test,dataset/curated/lion/lion_722223161.jpg
+720112745,lion_720112745,Lion,test,dataset/curated/lion/lion_720112745.jpg
+666558268,lion_666558268,Lion,test,dataset/curated/lion/lion_666558268.jpg
+722042872,lion_722042872,Lion,test,dataset/curated/lion/lion_722042872.jpg
+715453561,lion_715453561,Lion,test,dataset/curated/lion/lion_715453561.jpg
+618952912,elephant_618952912,Asian Elephant,train,dataset/curated/elephant/elephant_618952912.jpg
+759881119,elephant_759881119,Asian Elephant,train,dataset/curated/elephant/elephant_759881119.jpg
+636314241,elephant_636314241,Asian Elephant,train,dataset/curated/elephant/elephant_636314241.jpg
+750817521,elephant_750817521,Asian Elephant,train,dataset/curated/elephant/elephant_750817521.jpg
+688799494,elephant_688799494,Asian Elephant,train,dataset/curated/elephant/elephant_688799494.jpg
+687166772,elephant_687166772,Asian Elephant,train,dataset/curated/elephant/elephant_687166772.jpg
+680734682,elephant_680734682,Asian Elephant,train,dataset/curated/elephant/elephant_680734682.jpg
+623022849,elephant_623022849,Asian Elephant,train,dataset/curated/elephant/elephant_623022849.jpg
+680735141,elephant_680735141,Asian Elephant,train,dataset/curated/elephant/elephant_680735141.jpg
+680261730,elephant_680261730,Asian Elephant,train,dataset/curated/elephant/elephant_680261730.jpg
+680983222,elephant_680983222,Asian Elephant,train,dataset/curated/elephant/elephant_680983222.jpg
+680094508,elephant_680094508,Asian Elephant,train,dataset/curated/elephant/elephant_680094508.jpg
+676529480,elephant_676529480,Asian Elephant,train,dataset/curated/elephant/elephant_676529480.jpg
+746369151,elephant_746369151,Asian Elephant,train,dataset/curated/elephant/elephant_746369151.jpg
+676750642,elephant_676750642,Asian Elephant,train,dataset/curated/elephant/elephant_676750642.jpg
+738945407,elephant_738945407,Asian Elephant,train,dataset/curated/elephant/elephant_738945407.jpg
+680988766,elephant_680988766,Asian Elephant,train,dataset/curated/elephant/elephant_680988766.jpg
+730719620,elephant_730719620,Asian Elephant,train,dataset/curated/elephant/elephant_730719620.jpg
+682036079,elephant_682036079,Asian Elephant,train,dataset/curated/elephant/elephant_682036079.jpg
+754925769,elephant_754925769,Asian Elephant,train,dataset/curated/elephant/elephant_754925769.jpg
+680255301,elephant_680255301,Asian Elephant,train,dataset/curated/elephant/elephant_680255301.jpg
+680261398,elephant_680261398,Asian Elephant,train,dataset/curated/elephant/elephant_680261398.jpg
+708889516,elephant_708889516,Asian Elephant,train,dataset/curated/elephant/elephant_708889516.jpg
+684713855,elephant_684713855,Asian Elephant,train,dataset/curated/elephant/elephant_684713855.jpg
+618952127,elephant_618952127,Asian Elephant,train,dataset/curated/elephant/elephant_618952127.jpg
+707765888,elephant_707765888,Asian Elephant,train,dataset/curated/elephant/elephant_707765888.jpg
+685177113,elephant_685177113,Asian Elephant,train,dataset/curated/elephant/elephant_685177113.jpg
+680993562,elephant_680993562,Asian Elephant,train,dataset/curated/elephant/elephant_680993562.jpg
+736976074,elephant_736976074,Asian Elephant,train,dataset/curated/elephant/elephant_736976074.jpg
+730823344,elephant_730823344,Asian Elephant,train,dataset/curated/elephant/elephant_730823344.jpg
+618953087,elephant_618953087,Asian Elephant,train,dataset/curated/elephant/elephant_618953087.jpg
+754466576,elephant_754466576,Asian Elephant,train,dataset/curated/elephant/elephant_754466576.jpg
+681918961,elephant_681918961,Asian Elephant,train,dataset/curated/elephant/elephant_681918961.jpg
+681345344,elephant_681345344,Asian Elephant,train,dataset/curated/elephant/elephant_681345344.jpg
+754781633,elephant_754781633,Asian Elephant,train,dataset/curated/elephant/elephant_754781633.jpg
+717120011,elephant_717120011,Asian Elephant,validation,dataset/curated/elephant/elephant_717120011.jpg
+679606389,elephant_679606389,Asian Elephant,validation,dataset/curated/elephant/elephant_679606389.jpg
+759553696,elephant_759553696,Asian Elephant,validation,dataset/curated/elephant/elephant_759553696.jpg
+670886880,elephant_670886880,Asian Elephant,validation,dataset/curated/elephant/elephant_670886880.jpg
+638563474,elephant_638563474,Asian Elephant,validation,dataset/curated/elephant/elephant_638563474.jpg
+685240141,elephant_685240141,Asian Elephant,validation,dataset/curated/elephant/elephant_685240141.jpg
+744969949,elephant_744969949,Asian Elephant,validation,dataset/curated/elephant/elephant_744969949.jpg
+737790194,elephant_737790194,Asian Elephant,test,dataset/curated/elephant/elephant_737790194.jpg
+746368722,elephant_746368722,Asian Elephant,test,dataset/curated/elephant/elephant_746368722.jpg
+628475208,elephant_628475208,Asian Elephant,test,dataset/curated/elephant/elephant_628475208.jpg
+716560802,elephant_716560802,Asian Elephant,test,dataset/curated/elephant/elephant_716560802.jpg
+757953152,elephant_757953152,Asian Elephant,test,dataset/curated/elephant/elephant_757953152.jpg
+723715299,elephant_723715299,Asian Elephant,test,dataset/curated/elephant/elephant_723715299.jpg
+663717582,elephant_663717582,Asian Elephant,test,dataset/curated/elephant/elephant_663717582.jpg
+680277623,elephant_680277623,Asian Elephant,test,dataset/curated/elephant/elephant_680277623.jpg
+757959364,chital_757959364,Chital,train,dataset/curated/chital/chital_757959364.jpg
+629679410,chital_629679410,Chital,train,dataset/curated/chital/chital_629679410.jpg
+633472959,chital_633472959,Chital,train,dataset/curated/chital/chital_633472959.jpg
+738947050,chital_738947050,Chital,train,dataset/curated/chital/chital_738947050.jpg
+628297715,chital_628297715,Chital,train,dataset/curated/chital/chital_628297715.jpg
+630392303,chital_630392303,Chital,train,dataset/curated/chital/chital_630392303.jpg
+619855332,chital_619855332,Chital,train,dataset/curated/chital/chital_619855332.jpg
+629251712,chital_629251712,Chital,train,dataset/curated/chital/chital_629251712.jpg
+642330954,chital_642330954,Chital,train,dataset/curated/chital/chital_642330954.jpg
+666971385,chital_666971385,Chital,train,dataset/curated/chital/chital_666971385.jpg
+682027782,chital_682027782,Chital,train,dataset/curated/chital/chital_682027782.jpg
+630582896,chital_630582896,Chital,train,dataset/curated/chital/chital_630582896.jpg
+627762044,chital_627762044,Chital,train,dataset/curated/chital/chital_627762044.jpg
+627006568,chital_627006568,Chital,train,dataset/curated/chital/chital_627006568.jpg
+757904093,chital_757904093,Chital,train,dataset/curated/chital/chital_757904093.jpg
+756589838,chital_756589838,Chital,train,dataset/curated/chital/chital_756589838.jpg
+620089062,chital_620089062,Chital,train,dataset/curated/chital/chital_620089062.jpg
+637009423,chital_637009423,Chital,train,dataset/curated/chital/chital_637009423.jpg
+624943516,chital_624943516,Chital,train,dataset/curated/chital/chital_624943516.jpg
+737749374,chital_737749374,Chital,train,dataset/curated/chital/chital_737749374.jpg
+753379510,chital_753379510,Chital,train,dataset/curated/chital/chital_753379510.jpg
+619854731,chital_619854731,Chital,train,dataset/curated/chital/chital_619854731.jpg
+626978801,chital_626978801,Chital,train,dataset/curated/chital/chital_626978801.jpg
+754807088,chital_754807088,Chital,train,dataset/curated/chital/chital_754807088.jpg
+716971548,chital_716971548,Chital,train,dataset/curated/chital/chital_716971548.jpg
+679612436,chital_679612436,Chital,train,dataset/curated/chital/chital_679612436.jpg
+676523650,chital_676523650,Chital,train,dataset/curated/chital/chital_676523650.jpg
+679611988,chital_679611988,Chital,train,dataset/curated/chital/chital_679611988.jpg
+676538845,chital_676538845,Chital,train,dataset/curated/chital/chital_676538845.jpg
+617717334,chital_617717334,Chital,train,dataset/curated/chital/chital_617717334.jpg
+756589825,chital_756589825,Chital,train,dataset/curated/chital/chital_756589825.jpg
+747493100,chital_747493100,Chital,train,dataset/curated/chital/chital_747493100.jpg
+666264473,chital_666264473,Chital,train,dataset/curated/chital/chital_666264473.jpg
+720589857,chital_720589857,Chital,train,dataset/curated/chital/chital_720589857.jpg
+627006751,chital_627006751,Chital,train,dataset/curated/chital/chital_627006751.jpg
+676538804,chital_676538804,Chital,validation,dataset/curated/chital/chital_676538804.jpg
+633472320,chital_633472320,Chital,validation,dataset/curated/chital/chital_633472320.jpg
+720592536,chital_720592536,Chital,validation,dataset/curated/chital/chital_720592536.jpg
+739021683,chital_739021683,Chital,validation,dataset/curated/chital/chital_739021683.jpg
+624392685,chital_624392685,Chital,validation,dataset/curated/chital/chital_624392685.jpg
+617720837,chital_617720837,Chital,validation,dataset/curated/chital/chital_617720837.jpg
+676527837,chital_676527837,Chital,validation,dataset/curated/chital/chital_676527837.jpg
+633473017,chital_633473017,Chital,validation,dataset/curated/chital/chital_633473017.jpg
+624663794,chital_624663794,Chital,test,dataset/curated/chital/chital_624663794.jpg
+676540347,chital_676540347,Chital,test,dataset/curated/chital/chital_676540347.jpg
+628247605,chital_628247605,Chital,test,dataset/curated/chital/chital_628247605.jpg
+682032153,chital_682032153,Chital,test,dataset/curated/chital/chital_682032153.jpg
+676527894,chital_676527894,Chital,test,dataset/curated/chital/chital_676527894.jpg
+746410908,chital_746410908,Chital,test,dataset/curated/chital/chital_746410908.jpg
+628819513,chital_628819513,Chital,test,dataset/curated/chital/chital_628819513.jpg

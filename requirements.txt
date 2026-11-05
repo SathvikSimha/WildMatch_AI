@@ -1,0 +1,22 @@
+# WildMatch AI - Project Dependencies
+# Compatible with Python 3.10+
+
+# Deep Learning Framework
+torch>=2.0.0
+torchvision>=0.15.0
+
+# Data Manipulation & Numerical Computing
+numpy>=1.24.0,<2.0.0
+pandas>=2.0.0
+
+# Image Processing
+Pillow>=10.0.0
+
+# Network & Web API (iNaturalist Data Collection)
+requests>=2.28.0
+
+# Pretrained Vision-Language Models (BLIP Captioning)
+transformers>=4.30.0
+
+# System & Memory Monitoring (Batch Resource Management)
+psutil>=5.9.0

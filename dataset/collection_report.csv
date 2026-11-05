@@ -1,0 +1,2 @@
+species,requested_count,successfully_downloaded_count,skipped_count,failed_count,reasons_for_skipping_or_failure,target_achieved
+Chital,70,70,1047,0,"Skips: disallowed_license_cc-by-nc=1023, duplicate_photo_id=6, disallowed_license_cc0=3, disallowed_license_cc-by-nc-nd=8, disallowed_license_cc-by-nc-sa=6, disallowed_license_cc-by-nd=1",True

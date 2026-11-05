@@ -1,0 +1,48 @@
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Dataset images (shared separately through Google Drive)
+dataset/raw/
+dataset/curated/**/*.jpg
+dataset/curated/**/*.jpeg
+dataset/curated/**/*.png
+
+# Large dataset archives
+dataset/raw.zip
+*.zip
+
+# Contact sheets
+dataset/curation/contact_sheets/
+dataset/curation/expansion_contact_sheets/
+dataset/captions/review_contact_sheets/*.jpg
+
+# Backups and temporary files
+*.bak
+*.bak_*
+*.tmp
+temp_*
+
+# IDE files
+.vscode/
+.idea/
+.gemini/
+
+# Environment variables
+.env
+
+# Model checkpoints
+checkpoints/
+*.pt
+*.pth
+*.ckpt
+*.onnx
+
+# OS files
+.DS_Store
+Thumbs.db
