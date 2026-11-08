@@ -1,48 +1,100 @@
-# Python cache
+# ==============================================================================
+# WildMatch AI - Git Ignore Specification
+# ==============================================================================
+
+# --- Python Bytecode & Cache ---
 __pycache__/
 *.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
 
-# Virtual environments
+# --- Virtual Environments ---
 .venv/
 venv/
 env/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
 
-# Dataset images (shared separately through Google Drive)
+# --- Dataset Binary Images (Hosted on Google Drive, kept out of git) ---
 dataset/raw/
 dataset/curated/**/*.jpg
 dataset/curated/**/*.jpeg
 dataset/curated/**/*.png
+dataset/curated/**/*.JPG
+dataset/curated/**/*.JPEG
+dataset/curated/**/*.PNG
 
-# Large dataset archives
+# --- Download & Archive Directories ---
+dataset_download/
 dataset/raw.zip
+dataset/curated.zip
 *.zip
+*.tar
+*.tar.gz
+*.tgz
+*.rar
+*.7z
 
-# Contact sheets
+# --- Contact Sheets & Generated Visual Review Files ---
 dataset/curation/contact_sheets/
 dataset/curation/expansion_contact_sheets/
 dataset/captions/review_contact_sheets/*.jpg
+dataset/captions/review_contact_sheets/*.jpeg
+dataset/captions/review_contact_sheets/*.png
 
-# Backups and temporary files
-*.bak
-*.bak_*
-*.tmp
-temp_*
-
-# IDE files
-.vscode/
-.idea/
-.gemini/
-
-# Environment variables
-.env
-
-# Model checkpoints
+# --- Model Checkpoints & Serialized Weights ---
 checkpoints/
 *.pt
 *.pth
 *.ckpt
+*.bin
 *.onnx
+*.safetensors
 
-# OS files
+# --- Backups & Temporary Files ---
+*.bak
+*.bak_*
+*.tmp
+temp_*
+*.swp
+*.swo
+
+# --- IDEs & Developer Tooling ---
+.vscode/
+.idea/
+.gemini/
+*.sublime-workspace
+*.sublime-project
+
+# --- Operating System Artifacts ---
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
+desktop.ini
+
+# --- Environment Configurations ---
+.env
+.env.local
+.env.*.local
