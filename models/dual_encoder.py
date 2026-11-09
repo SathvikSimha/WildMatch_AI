@@ -3,7 +3,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import math
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Dict, Optional, Tuple, Union
 
 try:
     from WildMatch_AI.models.image_encoder import ImageEncoder
@@ -222,3 +222,23 @@ class DualEncoder(nn.Module):
             Embedding dimension integer (e.g. 256).
         """
         return self.embed_dim
+
+    @classmethod
+    def load_from_checkpoint(
+        cls,
+        checkpoint_path: Union[str, Any] = "models/wildmatch_v3_dual_encoder.pth",
+        map_location: str = "cpu",
+    ) -> Any:
+        """
+        Load a trained dual encoder checkpoint.
+        Automatically delegates to WildMatchV3DualEncoder for Version 3 checkpoints.
+        """
+        try:
+            from WildMatch_AI.models.wildmatch_v3 import WildMatchV3DualEncoder
+        except ImportError:
+            from models.wildmatch_v3 import WildMatchV3DualEncoder
+
+        return WildMatchV3DualEncoder.load_from_checkpoint(
+            checkpoint_path=checkpoint_path, map_location=map_location
+        )
+

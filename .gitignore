@@ -69,6 +69,11 @@ checkpoints/
 *.onnx
 *.safetensors
 
+# Member 3: Whitelist Version 3 Delivery Weights for Downstream Inference
+!models/wildmatch_v3_dual_encoder.pth
+!models/wildmatch_v3_species_heads.pth
+
+
 # --- Backups & Temporary Files ---
 *.bak
 *.bak_*

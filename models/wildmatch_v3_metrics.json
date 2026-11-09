@@ -1,0 +1,18 @@
+{
+  "i2t_exact_r1": 0.1666666716337204,
+  "i2t_exact_r5": 0.5333333611488342,
+  "i2t_species_r1": 0.8666666746139526,
+  "i2t_species_r5": 0.8999999761581421,
+  "t2i_exact_r1": 0.1666666716337204,
+  "t2i_exact_r5": 0.6666666865348816,
+  "t2i_species_r1": 1.0,
+  "t2i_species_r5": 1.0,
+  "image_classifier_accuracy": 0.8666666746139526,
+  "text_classifier_accuracy": 1.0,
+  "image_to_text_retrieved_species_accuracy": 0.8666666666666667,
+  "text_to_image_retrieved_species_accuracy": 1.0,
+  "species_retrieval_r1_average": 0.9333333373069763,
+  "species_retrieval_r5_average": 0.949999988079071,
+  "exact_retrieval_r1_average": 0.1666666716337204,
+  "exact_retrieval_r5_average": 0.6000000238418579
+}

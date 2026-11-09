@@ -55,8 +55,8 @@ WildMatch AI is divided into four modular components developed by four team memb
 |:---:|---|---|:---:|
 | **Member 1** | Dataset Collection & Preprocessing | `dataset/`, `preprocessing/`, `dataset/vocabulary.json`, `scripts/validate_dataloaders.py` | ✅ **Completed & Validated** |
 | **Member 2** | Image & Text Encoder Architecture | `models/image_encoder.py`, `models/text_encoder.py`, `models/dual_encoder.py`, `tests/`, `scripts/verify_member2_models.py`, `docs/MODEL_ARCHITECTURE.md` | ✅ **Completed & Verified** |
-| **Member 3** | Contrastive Learning & Model Training | `loss.py`, `train.py`, checkpoints, training/validation loss curves, training report | 🔄 **Handoff Ready** (Interface contracts specified) |
-| **Member 4** | Similarity Matching, Evaluation & App | `retrieval.py`, `evaluation.py`, `app.py` (Gradio UI), Top-K ranking, Recall@1/5, MRR | 🔄 **Handoff Ready** (Interface contracts specified) |
+| **Member 3** | Contrastive Learning & Model Training | `models/wildmatch_v3_dual_encoder.pth`, `models/wildmatch_v3_species_heads.pth`, `models/inference.py`, `MEMBER3_HANDOFF.md`, `docs/MEMBER3_TECHNICAL_REPORT.md` | ✅ **Completed & Delivered (Version 3)** |
+| **Member 4** | Similarity Matching, Evaluation & App | `retrieval.py`, `evaluation.py`, `app.py` (Gradio UI), Top-K ranking, Recall@1/5, MRR | 🔄 **Next Step: Use MEMBER3_HANDOFF.md** |
 
 ---
 
@@ -206,7 +206,54 @@ top5_scores, top5_indices = torch.topk(similarity_scores, k=5, dim=-1)
 
 ---
 
-## 5. Member 1: Dataset Setup & Extraction
+## 5. Member 3: Contrastive Learning, Model Training & Version 3 Deliverables
+
+Member 3 owns the contrastive learning formulation, loss design, auxiliary supervision, hyperparameter scheduling, training execution, model checkpoint selection, and experimental evaluation.
+
+Full technical details, training curves, and mathematical formulations are documented in [**`docs/MEMBER3_TECHNICAL_REPORT.md`**](docs/MEMBER3_TECHNICAL_REPORT.md). For downstream integration instructions for Member 4, see [**`MEMBER3_HANDOFF.md`**](MEMBER3_HANDOFF.md).
+
+### 5.1 Version 3 Model Architecture
+- **Visual Backbone:** ImageNet-pretrained ResNet-18 (512-d features exiting Layer 4). Fine-tuned with conservative learning rate ($\eta_{\text{backbone}} = 10^{-5}$). Zero remote weight downloads required for inference.
+- **Text Encoder:** Dense word embedding ($158 \to 128$) + single-layer BiLSTM ($128$ hidden per direction $\to 256$-d) with padding-aware masked mean pooling across non-PAD tokens.
+- **Projection Heads:** Visual ($512 \to 512 \to 256$) and Textual ($256 \to 256 \to 256$) 2-layer MLPs mapping to $D=256$.
+- **Normalization:** Unit L2 hypersphere normalization ($\|\mathbf{v}\|_2 = 1.0, \|\mathbf{t}\|_2 = 1.0 \in \mathbb{S}^{255}$).
+- **Species-Aware Multi-Positive Contrastive Loss:** Multi-positive InfoNCE grouping all images and captions sharing the same biological species label as positive pairs, eliminating the false negative problem of standard InfoNCE.
+- **Auxiliary Species Supervision:** Cross-entropy species classification heads on both image and text embeddings (`Linear(256 -> 4)`).
+
+### 5.2 Version 3 Experimental Results (Held-Out Test Set, $N=30$)
+
+| Metric | Result | Analysis |
+|---|---:|---|
+| **Text-to-Image Species Recall@1** | **100.00%** | All 30 text queries retrieve the correct species at Rank 1 |
+| **Text-to-Image Species Recall@5** | **100.00%** | All 30 text queries retrieve the correct species in Top-5 |
+| **Image-to-Text Species Recall@1** | **86.67%** | 26 of 30 image queries retrieve matching species text at Rank 1 |
+| **Image-to-Text Species Recall@5** | **90.00%** | 27 of 30 image queries retrieve matching species text in Top-5 |
+| **Text Classifier Accuracy** | **100.00%** | Auxiliary head correctly classifies all 30 text captions |
+| **Image Classifier Accuracy** | **86.67%** | Auxiliary head correctly classifies test images (26/30) |
+| **Average Species Recall@1** | **93.33%** | Mean bimodal species retrieval accuracy |
+| **Average Species Recall@5** | **95.00%** | Mean bimodal Top-5 species accuracy |
+| **Text-to-Image Exact Recall@1** | **16.67%** | Exact original pair retrieved at Rank 1 (5/30) |
+| **Text-to-Image Exact Recall@5** | **66.67%** | Exact original pair retrieved in Top-5 (20/30) |
+| **Image-to-Text Exact Recall@1** | **16.67%** | Exact original pair retrieved at Rank 1 (5/30) |
+| **Image-to-Text Exact Recall@5** | **53.33%** | Exact original pair retrieved in Top-5 (16/30) |
+| **Average Exact Recall@1** | **16.67%** | Mean bimodal Top-1 exact retrieval |
+| **Average Exact Recall@5** | **60.00%** | Mean bimodal Top-5 exact retrieval |
+
+### 5.3 Model Artifacts & Deliverables
+All deliverables are archived in `models/` and root:
+- `models/wildmatch_v3_dual_encoder.pth`: Trained state dict of `WildMatchV3DualEncoder` (48.0 MB).
+- `models/wildmatch_v3_species_heads.pth`: Trained auxiliary classification heads (11.1 KB).
+- `models/wildmatch_v3_vocabulary.json`: 158-word vocabulary mapping with special tokens.
+- `models/wildmatch_v3_metrics.json`: Evaluated test metrics.
+- `models/wildmatch_v3_history.json` & `history.csv`: 34-epoch training loss and validation progression.
+- Training loss and validation retrieval graphs: `models/wildmatch_v3_loss.png`, `models/wildmatch_v3_validation.png`.
+- Test set confusion matrices: `models/wildmatch_v3_image_confusion.png`, `models/wildmatch_v3_text_confusion.png`.
+- Reusable inference API: [`models/inference.py`](models/inference.py).
+- Sample inference demonstration script: [`scripts/sample_inference.py`](scripts/sample_inference.py).
+
+---
+
+## 6. Member 1: Dataset Setup & Extraction
 
 Image binary files are hosted separately on Google Drive to keep the git repository lightweight (< 1 MB). All captions, vocabulary, split manifests, and scripts are tracked directly in git.
 
