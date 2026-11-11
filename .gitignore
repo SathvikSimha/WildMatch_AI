@@ -103,3 +103,7 @@ desktop.ini
 .env
 .env.local
 .env.*.local
+Divide and conquer.pdf
+
+# --- Agent Skills & Local Tooling ---
+.agents/

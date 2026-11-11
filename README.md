@@ -41,7 +41,7 @@ WildMatch AI is divided into four modular components developed by four team memb
                     get_logits()         │                                │ encode_image / text
                                          ▼                                ▼
 ┌──────────────────────────────────────────────────┐ ┌────────────────────────────────────────────┐
-│ 3. MEMBER 3: CONTRASTIVE TRAINING [HANDOFF READY]│ │ 4. MEMBER 4: RETRIEVAL & APP [HANDOFF READY│
+│ 3. MEMBER 3: CONTRASTIVE TRAINING [COMPLETED]      │ │ 4. MEMBER 4: RETRIEVAL & APP [COMPLETED]   │
 │    • Symmetric InfoNCE Loss (loss.py)            │ │    • Cosine Similarity Matrix (retrieval.py│
 │    • AdamW Optimizer & Cosine Annealing          │ │    • Offline Gallery Vector Indexing       │
 │    • Contrastive Training Loops (train.py)       │ │    • Top-K Ranking & Metrics (Recall, MRR) │
@@ -56,7 +56,7 @@ WildMatch AI is divided into four modular components developed by four team memb
 | **Member 1** | Dataset Collection & Preprocessing | `dataset/`, `preprocessing/`, `dataset/vocabulary.json`, `scripts/validate_dataloaders.py` | ✅ **Completed & Validated** |
 | **Member 2** | Image & Text Encoder Architecture | `models/image_encoder.py`, `models/text_encoder.py`, `models/dual_encoder.py`, `tests/`, `scripts/verify_member2_models.py`, `docs/MODEL_ARCHITECTURE.md` | ✅ **Completed & Verified** |
 | **Member 3** | Contrastive Learning & Model Training | `models/wildmatch_v3_dual_encoder.pth`, `models/wildmatch_v3_species_heads.pth`, `models/inference.py`, `MEMBER3_HANDOFF.md`, `docs/MEMBER3_TECHNICAL_REPORT.md` | ✅ **Completed & Delivered (Version 3)** |
-| **Member 4** | Similarity Matching, Evaluation & App | `retrieval.py`, `evaluation.py`, `app.py` (Gradio UI), Top-K ranking, Recall@1/5, MRR | 🔄 **Next Step: Use MEMBER3_HANDOFF.md** |
+| **Member 4** | Similarity Matching, Evaluation & App | `retrieval.py`, `evaluation.py`, `app.py` (Gradio UI), `docs/member4_evaluation_results.json`, `tests/test_member4_retrieval_eval.py` | ✅ **Completed & Verified** |
 
 ---
 
@@ -363,6 +363,13 @@ python scripts/verify_member2_models.py
 
 # Run Member 1 DataLoader Validation Suite
 python scripts/validate_dataloaders.py
+
+# Run Member 4 Retrieval Demo & Evaluation Suite
+python retrieval.py --split test --top-k 5
+python evaluation.py --split test --save-json docs/member4_evaluation_results.json
+
+# Launch Member 4 Interactive Gradio Application
+python app.py
 ```
 
 ---
