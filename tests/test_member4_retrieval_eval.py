@@ -182,6 +182,59 @@ class TestMember4GradioApp(unittest.TestCase):
         self.assertEqual(len(ev_overall), 5)
         self.assertEqual(len(ev_species), 4)
 
+    def test_ui_helpers_empty_states_and_escaping(self):
+        # Empty-state guidance for T2I, I2T, and Pair Scorer
+        t2i_probs, t2i_status, t2i_gal, t2i_df = wildmatch_app.run_text_to_image(
+            "   ", 5, "all", "All"
+        )
+        self.assertEqual(t2i_probs, {})
+        self.assertIn("Enter a Wildlife Description", t2i_status)
+        self.assertEqual(t2i_gal, [])
+        self.assertTrue(t2i_df.empty)
+
+        i2t_probs, i2t_status, i2t_df = wildmatch_app.run_image_to_text(
+            None, 5, "all", "All"
+        )
+        self.assertEqual(i2t_probs, {})
+        self.assertIn("Upload or Select", i2t_status)
+        self.assertTrue(i2t_df.empty)
+
+        meter_empty, summary_empty, p_img, p_txt = wildmatch_app._run_pair_scorer_ui(
+            None, "a tiger"
+        )
+        self.assertIn("wm-alert-empty", meter_empty)
+        self.assertIn("upload or select", summary_empty.lower())
+        self.assertEqual(p_img, {})
+        self.assertEqual(p_txt, {})
+
+        # HTML escaping in meter builder
+        escaped_html = wildmatch_app._build_pair_meter_html(message="<script>alert(1)</script>")
+        self.assertNotIn("<script>", escaped_html)
+        self.assertIn("&lt;script&gt;", escaped_html)
+
+        # Dashboard KPI cards & Pair meter populated path
+        kpis_html, dash_md, dash_overall, dash_species = wildmatch_app._run_evaluation_dashboard("test")
+        self.assertIn("wm-kpi-grid", kpis_html)
+        self.assertIn("Evaluation Summary", dash_md)
+        self.assertEqual(len(dash_overall), 5)
+        self.assertEqual(len(dash_species), 4)
+
+        retriever = wildmatch_app.get_retriever()
+        sample_path = retriever.records[0]["image_path"]
+        with Image.open(sample_path) as img:
+            meter_ok, pair_md, img_p, txt_p = wildmatch_app._run_pair_scorer_ui(
+                img, "a tiger walking through tall grass"
+            )
+            self.assertIn("wm-meter-card", meter_ok)
+            self.assertIn("Cosine Similarity", pair_md)
+            self.assertEqual(len(img_p), 4)
+            self.assertEqual(len(txt_p), 4)
+
+        # Clear handlers return expected tuple lengths
+        self.assertEqual(len(wildmatch_app._clear_t2i()), 8)
+        self.assertEqual(len(wildmatch_app._clear_i2t()), 7)
+        self.assertEqual(len(wildmatch_app._clear_pair()), 6)
+
 
 if __name__ == "__main__":
     unittest.main()
