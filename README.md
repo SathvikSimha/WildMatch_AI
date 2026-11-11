@@ -1,15 +1,15 @@
-# WildMatch AI — Multimodal Wildlife Semantic Matching
+# WildMatch AI — Multimodal Wildlife Semantic Matching & Retrieval
 
-**Project:** Fine-Grained Wildlife Image–Text Semantic Matching Using Contrastive Deep Learning  
-**Status:** Dataset Pipeline (Member 1) & Dual-Encoder Architecture (Member 2) Fully Implemented & Empirically Verified  
-**Dataset Scale:** 200 balanced image–caption pairs across 4 species  
-**Model Architecture:** Custom 4-Stage CNN + BiLSTM with Temperature-Calibrated Shared Space  
+**Project:** Fine-Grained Wildlife Image–Text Semantic Matching and Retrieval Using Contrastive Deep Learning  
+**Status:** **Fully Implemented, Trained, Evaluated, and Verified (Members 1, 2, 3, and 4 Complete)**  
+**Dataset Scale:** 200 curated image–caption pairs across 4 focal wildlife species  
+**Model Architecture:** ResNet-18 visual backbone + BiLSTM textual encoder with 256-dimensional unit $L_2$-normalized shared semantic space  
 
 ---
 
 ## 1. Project Overview & Division of Responsibilities
 
-WildMatch AI is divided into four modular components developed by four team members, designed to integrate into a cohesive multimodal retrieval system:
+WildMatch AI is an end-to-end multimodal deep learning system designed for biodiversity and wildlife observation matching. The system maps raw visual imagery and natural language descriptions into a calibrated, shared 256-dimensional hypersphere $\mathbb{S}^{255}$, enabling bidirectional cross-modal retrieval via cosine similarity.
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────────────────────────┐
@@ -34,18 +34,19 @@ WildMatch AI is divided into four modular components developed by four team memb
 │    • ImageEncoder (models/image_encoder.py)       ──► 4-Stage ConvNet + MLP ──► [B, 256] (L2=1) │
 │    • TextEncoder (models/text_encoder.py)         ──► BiLSTM + Masked Mean  ──► [B, 256] (L2=1) │
 │    • DualEncoder (models/dual_encoder.py)         ──► Calibrated Joint/Unimodal Multimodal Space│
-│    • Verification Harness (verify_member2_models) ──► 25/25 Tests Passing (Code 0, 937K Params) │
+│    • Architectural Invariants & Shape Verification──► 25/25 Tests Passing (937K Params)        │
 └────────────────────────────────────────┬────────────────────────────────┬───────────────────────┘
                                          │                                │
-                    Symmetric Logits:    │                                │ Unimodal Vectors:
-                    get_logits()         │                                │ encode_image / text
+                    Feature Tensors &    │                                │ Symmetric Logits &
+                    Embedding Spaces     │                                │ Projection Heads
                                          ▼                                ▼
 ┌──────────────────────────────────────────────────┐ ┌────────────────────────────────────────────┐
 │ 3. MEMBER 3: CONTRASTIVE TRAINING [COMPLETED]      │ │ 4. MEMBER 4: RETRIEVAL & APP [COMPLETED]   │
-│    • Symmetric InfoNCE Loss (loss.py)            │ │    • Cosine Similarity Matrix (retrieval.py│
-│    • AdamW Optimizer & Cosine Annealing          │ │    • Offline Gallery Vector Indexing       │
-│    • Contrastive Training Loops (train.py)       │ │    • Top-K Ranking & Metrics (Recall, MRR) │
-│    • Loss Curves, Metrics & Model Checkpoints    │ │    • Interactive Gradio Explorer (app.py)  │
+│    • Version 3 ResNet-18 + BiLSTM (wildmatch_v3) │ │    • Cosine Similarity Matrix (retrieval.py│
+│    • Symmetric InfoNCE & Multi-Positive Loss     │ │    • Gallery Indexing & Cross-Modal Top-K  │
+│    • Auxiliary Species Supervision (Linear 256->4│ │    • Evaluation Suite (Recall@K, MRR)      │
+│    • Training Pipeline & Scheduling (train.py)   │ │    • Interactive Gradio Explorer (app.py)  │
+│    • Checkpoints: wildmatch_v3_dual_encoder.pth  │ │    • Evaluation Report & Dashboard Cards   │
 └──────────────────────────────────────────────────┘ └────────────────────────────────────────────┘
 ```
 
@@ -54,237 +55,148 @@ WildMatch AI is divided into four modular components developed by four team memb
 | Member | Focus Area | Key Deliverables | Status |
 |:---:|---|---|:---:|
 | **Member 1** | Dataset Collection & Preprocessing | `dataset/`, `preprocessing/`, `dataset/vocabulary.json`, `scripts/validate_dataloaders.py` | ✅ **Completed & Validated** |
-| **Member 2** | Image & Text Encoder Architecture | `models/image_encoder.py`, `models/text_encoder.py`, `models/dual_encoder.py`, `tests/`, `scripts/verify_member2_models.py`, `docs/MODEL_ARCHITECTURE.md` | ✅ **Completed & Verified** |
-| **Member 3** | Contrastive Learning & Model Training | `models/wildmatch_v3_dual_encoder.pth`, `models/wildmatch_v3_species_heads.pth`, `models/inference.py`, `MEMBER3_HANDOFF.md`, `docs/MEMBER3_TECHNICAL_REPORT.md` | ✅ **Completed & Delivered (Version 3)** |
+| **Member 2** | Image & Text Encoder Architecture | `models/image_encoder.py`, `models/text_encoder.py`, `models/dual_encoder.py`, `tests/test_dual_encoder.py`, `docs/MODEL_ARCHITECTURE.md` | ✅ **Completed & Verified** |
+| **Member 3** | Contrastive Learning & Model Training | `training/loss.py`, `training/train.py`, `models/wildmatch_v3.py`, `models/wildmatch_v3_dual_encoder.pth`, `docs/MEMBER3_TECHNICAL_REPORT.md` | ✅ **Completed & Delivered** |
 | **Member 4** | Similarity Matching, Evaluation & App | `retrieval.py`, `evaluation.py`, `app.py` (Gradio UI), `docs/member4_evaluation_results.json`, `tests/test_member4_retrieval_eval.py` | ✅ **Completed & Verified** |
 
 ---
 
-## 2. Member 2: Deep Learning Dual-Encoder Architecture
+## 2. Member 1: Dataset Setup & Preprocessing
 
-Member 2 designs, implements, and empirically validates the dual-branch neural architecture that maps visual observations and textual descriptions into a shared, calibrated 256-dimensional semantic space.
-
-Full architectural specifications, layer tables, and Mermaid flowcharts are detailed in [**`WildMatch_AI/docs/MODEL_ARCHITECTURE.md`**](docs/MODEL_ARCHITECTURE.md).
-
-> [!NOTE]
-> **Important Note on Weight Initialization & Retrieval Scores:**  
-> Member 2's deliverable is the **verified deep learning architecture**. Baseline demonstration scripts instantiate `DualEncoder` with default PyTorch random weights (expected random dot products in $\mathbb{R}^{256}$ are near zero: $\sim 0.01 - 0.03$). To achieve high-accuracy semantic retrieval ($+0.65 - +0.85$), **Member 3 must execute the contrastive training pipeline** to produce `checkpoints/best_dual_encoder.pth`.  
-> For full mathematical explanation and step-by-step instructions for Member 3 & Member 4, see [**`docs/MEMBER2_HANDOFF_CLARIFICATION.md`**](docs/MEMBER2_HANDOFF_CLARIFICATION.md).
-
-### 2.1 Custom CNN Image Encoder (`models/image_encoder.py`)
-- **Backbone**: 4 sequential convolutional stages with 32, 64, 128, and 256 channels.
-  - Each stage applies `Conv2d(kernel_size=3, padding=1, bias=False)`, `BatchNorm2d`, `ReLU(inplace=True)`, and `MaxPool2d(2, 2)`.
-  - Feature resolution stages: $224 \times 224 \to 112 \times 112 \to 56 \times 56 \to 28 \times 28 \to 14 \times 14$.
-- **Spatial Aggregation**: `nn.AdaptiveAvgPool2d((1, 1))` followed by `nn.Flatten()`, yielding a 256-d visual vector invariant to spatial resolution.
-- **Projection Head**: Two-layer MLP (`Linear(256, 256)` $\to$ `BatchNorm1d` $\to$ `ReLU` $\to$ `Dropout(0.1)` $\to$ `Linear(256, embed_dim)`).
-- **Normalization**: Unit L2 normalization (`F.normalize(p=2, dim=-1)`), ensuring $||v_i||_2 = 1.0 \pm 10^{-5}$.
-- **Feature Inspection**: `model.extract_features(images)` exposes intermediate `[B, 256, 14, 14]` spatial activation maps.
-- **Parameters**: 520,992 parameters (1.99 MB footprint).
-
-### 2.2 BiLSTM Text Encoder (`models/text_encoder.py`)
-- **Word Embedding**: `nn.Embedding(158, 128, padding_idx=0)` with embedding dropout ($p=0.1$).
-  - Special token indices: `<PAD>: 0`, `<UNK>: 1`, `<BOS>: 2`, `<EOS>: 3`. Zero gradient guaranteed for padding rows.
-- **Recurrent Backbone**: Bidirectional LSTM (`input_size=128`, `hidden_size=128`, 1 layer, `batch_first=True`), producing 256 features per timestep ($[B, 32, 256]$).
-- **Sequence Aggregation**: Padding-aware masked mean pooling:
-  $$\text{mask} = (\text{tokens} \ne \text{padding\_idx}), \quad \mathbf{h}_{\text{pooled}} = \frac{\sum_t \mathbf{h}_t \odot \text{mask}_t}{\sum_t \text{mask}_t}$$
-  Guarantees trailing `<PAD>` tokens do not contaminate sentence semantics.
-- **Projection Head**: Two-layer MLP (`Linear(256, 256)` $\to$ `BatchNorm1d` $\to$ `ReLU` $\to$ `Dropout(0.1)` $\to$ `Linear(256, embed_dim)`).
-- **Normalization**: Unit L2 normalization, ensuring $||t_i||_2 = 1.0 \pm 10^{-5}$.
-- **Parameters**: 416,512 parameters (1.59 MB footprint).
-
-### 2.3 Unified Dual Encoder (`models/dual_encoder.py`)
-- **Multimodal Composition**: Unifies `ImageEncoder` and `TextEncoder` with shared projection dimensionality (`embed_dim=256`, configurable to 128 or 512).
-- **Temperature Scaling**: Learnable calibration parameter `logit_scale` initialized to $\ln(1 / 0.07) \approx 2.6593$ ($\tau = 0.07$, scale $\approx 14.2857$) and clamped to $\ln(100.0) \approx 4.6052$ for numerical stability.
-- **Dual Operating Modes**:
-  1. **Joint Training Pass**: `forward(images, captions)` $\to$ `(image_embeds, text_embeds, scale)`
-  2. **Calibrated Symmetric Logits**: `get_logits(images, captions)` $\to$ `(logits_per_image, logits_per_text)`
-  3. **Unimodal Feature Extraction**: `encode_image(images)` $\to$ `[B, 256]` and `encode_text(captions)` $\to$ `[B, 256]`
-  4. **Cosine Similarity Matrix**: `compute_similarity(images, captions)` $\to$ `[B_img, B_txt]` with values strictly in $[-1.0, 1.0]$
-- **System Total**: **937,505 parameters** (Memory footprint: **3.58 MB**).
-
----
-
-## 3. Verification & Testing
-
-Member 2 deliverables include an exhaustive testing hierarchy covering unit tests, standalone invariants, and a master integration runner.
-
-### Running Tests
-
-```bash
-# 1. Run Master Verification Suite (Programmatic unittests + Member 1 & 3 & 4 simulations)
-python scripts/verify_member2_models.py
-
-# 2. Run all unit test suites (25 tests across image, text, and dual encoders)
-python -m unittest discover tests -v
-
-# 3. Run individual model verification and profiling scripts
-python scripts/verify_image_encoder.py
-python scripts/verify_text_encoder.py
-python scripts/verify_dual_encoder.py
-
-# 4. Verify Member 1 DataLoader integrity (15 checks)
-python scripts/validate_dataloaders.py
-```
-
-### Master Verification Results (`verify_member2_models.py`)
-
-```text
-================================================================================
-           WILDMATCH AI - MEMBER 2 MASTER MODEL VERIFICATION SUITE              
-================================================================================
-[PASS] STAGE 1: Programmatic Unit Test Suites (25 tests run, 0 failures, 0 errors)
-[PASS] STAGE 2: Member 1 Data Pipeline Integration (Vocabulary + DataLoader tensors)
-[PASS] STAGE 3: Simulated Member 3 Contrastive Training Step (InfoNCE + AdamW updates)
-[PASS] STAGE 4: Simulated Member 4 Retrieval Step (Cosine Ranking + Recall/MRR)
-[PASS] STAGE 5: Structural & Performance Audit (937,505 params, 3.58 MB, ~19 pairs/sec)
-================================================================================
-[PASS] ALL MEMBER 2 MODEL VERIFICATIONS SUCCESSFUL (Exit Code 0)
-================================================================================
-```
-
----
-
-## 4. Downstream Integration Guides
-
-### 4.1 For Member 3 (Contrastive Learning & Training)
-
-Member 3 can instantiate `DualEncoder` and directly compute symmetric cross-entropy contrastive loss:
-
-```python
-import torch
-import torch.nn.functional as F
-from WildMatch_AI.models import DualEncoder
-from WildMatch_AI.dataset.dataloader import create_dataloaders
-
-# 1. Load DataLoaders and instantiate DualEncoder
-train_loader, val_loader, test_loader = create_dataloaders(batch_size=16)
-model = DualEncoder(embed_dim=256, init_temperature=0.07)
-optimizer = torch.optim.AdamW(model.parameters(), lr=1e-4, weight_decay=1e-2)
-
-# 2. Training Step
-model.train()
-for batch in train_loader:
-    images, captions = batch['image'], batch['caption']
-    
-    # get_logits returns temperature-scaled logits [B, B]
-    logits_per_image, logits_per_text = model.get_logits(images, captions)
-    
-    # Ground-truth diagonal targets
-    targets = torch.arange(images.size(0), device=images.device)
-    loss = (F.cross_entropy(logits_per_image, targets) + 
-            F.cross_entropy(logits_per_text, targets)) / 2.0
-    
-    optimizer.zero_grad()
-    loss.backward()
-    torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
-    optimizer.step()
-```
-
-### 4.2 For Member 4 (Retrieval, Evaluation & Gradio UI)
-
-Member 4 can extract unimodal embeddings, compute cosine similarities, rank candidates, and build an interactive interface:
-
-```python
-import torch
-from WildMatch_AI.models import DualEncoder
-
-model = DualEncoder(embed_dim=256)
-model.eval()
-
-# 1. Unimodal Extraction
-with torch.no_grad():
-    gallery_image_embeddings = model.encode_image(all_gallery_images)  # [N_img, 256] (L2 norm = 1.0)
-    query_text_embedding = model.encode_text(query_caption_tokens)     # [1, 256] (L2 norm = 1.0)
-
-# 2. Cosine Similarity & Top-K Ranking
-# Dot product of L2-normalized vectors directly equals cosine similarity
-similarity_scores = torch.matmul(query_text_embedding, gallery_image_embeddings.t())  # [1, N_img]
-top5_scores, top5_indices = torch.topk(similarity_scores, k=5, dim=-1)
-
-# top5_indices contains rank-ordered gallery indices for display in Gradio UI
-```
-
----
-
-## 5. Member 3: Contrastive Learning, Model Training & Version 3 Deliverables
-
-Member 3 owns the contrastive learning formulation, loss design, auxiliary supervision, hyperparameter scheduling, training execution, model checkpoint selection, and experimental evaluation.
-
-Full technical details, training curves, and mathematical formulations are documented in [**`docs/MEMBER3_TECHNICAL_REPORT.md`**](docs/MEMBER3_TECHNICAL_REPORT.md). For downstream integration instructions for Member 4, see [**`MEMBER3_HANDOFF.md`**](MEMBER3_HANDOFF.md).
-
-### 5.1 Version 3 Model Architecture
-- **Visual Backbone:** ImageNet-pretrained ResNet-18 (512-d features exiting Layer 4). Fine-tuned with conservative learning rate ($\eta_{\text{backbone}} = 10^{-5}$). Zero remote weight downloads required for inference.
-- **Text Encoder:** Dense word embedding ($158 \to 128$) + single-layer BiLSTM ($128$ hidden per direction $\to 256$-d) with padding-aware masked mean pooling across non-PAD tokens.
-- **Projection Heads:** Visual ($512 \to 512 \to 256$) and Textual ($256 \to 256 \to 256$) 2-layer MLPs mapping to $D=256$.
-- **Normalization:** Unit L2 hypersphere normalization ($\|\mathbf{v}\|_2 = 1.0, \|\mathbf{t}\|_2 = 1.0 \in \mathbb{S}^{255}$).
-- **Species-Aware Multi-Positive Contrastive Loss:** Multi-positive InfoNCE grouping all images and captions sharing the same biological species label as positive pairs, eliminating the false negative problem of standard InfoNCE.
-- **Auxiliary Species Supervision:** Cross-entropy species classification heads on both image and text embeddings (`Linear(256 -> 4)`).
-
-### 5.2 Version 3 Experimental Results (Held-Out Test Set, $N=30$)
-
-| Metric | Result | Analysis |
-|---|---:|---|
-| **Text-to-Image Species Recall@1** | **100.00%** | All 30 text queries retrieve the correct species at Rank 1 |
-| **Text-to-Image Species Recall@5** | **100.00%** | All 30 text queries retrieve the correct species in Top-5 |
-| **Image-to-Text Species Recall@1** | **86.67%** | 26 of 30 image queries retrieve matching species text at Rank 1 |
-| **Image-to-Text Species Recall@5** | **90.00%** | 27 of 30 image queries retrieve matching species text in Top-5 |
-| **Text Classifier Accuracy** | **100.00%** | Auxiliary head correctly classifies all 30 text captions |
-| **Image Classifier Accuracy** | **86.67%** | Auxiliary head correctly classifies test images (26/30) |
-| **Average Species Recall@1** | **93.33%** | Mean bimodal species retrieval accuracy |
-| **Average Species Recall@5** | **95.00%** | Mean bimodal Top-5 species accuracy |
-| **Text-to-Image Exact Recall@1** | **16.67%** | Exact original pair retrieved at Rank 1 (5/30) |
-| **Text-to-Image Exact Recall@5** | **66.67%** | Exact original pair retrieved in Top-5 (20/30) |
-| **Image-to-Text Exact Recall@1** | **16.67%** | Exact original pair retrieved at Rank 1 (5/30) |
-| **Image-to-Text Exact Recall@5** | **53.33%** | Exact original pair retrieved in Top-5 (16/30) |
-| **Average Exact Recall@1** | **16.67%** | Mean bimodal Top-1 exact retrieval |
-| **Average Exact Recall@5** | **60.00%** | Mean bimodal Top-5 exact retrieval |
-
-### 5.3 Model Artifacts & Deliverables
-All deliverables are archived in `models/` and root:
-- `models/wildmatch_v3_dual_encoder.pth`: Trained state dict of `WildMatchV3DualEncoder` (48.0 MB).
-- `models/wildmatch_v3_species_heads.pth`: Trained auxiliary classification heads (11.1 KB).
-- `models/wildmatch_v3_vocabulary.json`: 158-word vocabulary mapping with special tokens.
-- `models/wildmatch_v3_metrics.json`: Evaluated test metrics.
-- `models/wildmatch_v3_history.json` & `history.csv`: 34-epoch training loss and validation progression.
-- Training loss and validation retrieval graphs: `models/wildmatch_v3_loss.png`, `models/wildmatch_v3_validation.png`.
-- Test set confusion matrices: `models/wildmatch_v3_image_confusion.png`, `models/wildmatch_v3_text_confusion.png`.
-- Reusable inference API: [`models/inference.py`](models/inference.py).
-- Sample inference demonstration script: [`scripts/sample_inference.py`](scripts/sample_inference.py).
-
----
-
-## 6. Member 1: Dataset Setup & Extraction
-
-Image binary files are hosted separately on Google Drive to keep the git repository lightweight (< 1 MB). All captions, vocabulary, split manifests, and scripts are tracked directly in git.
-
-### Google Drive Download Links
-
-[**Download WildMatch AI Dataset Archives on Google Drive**](https://drive.google.com/drive/folders/13XJRsQHok8HqZi3kYecnlEcWoTWI4gVY?usp=sharing)
-
-- **`wildmatch_curated_dataset.zip`** (~70 MB): 200 curated, verified wildlife images (50/species). **Required for training and DataLoader image loading.**
-- **`wildmatch_raw_dataset.zip`** (~100 MB): 280 raw collected images from iNaturalist before curation (optional).
-
-### Extraction Instructions
-
-1. Download `wildmatch_curated_dataset.zip` and extract into `dataset/`:
-   - `dataset/curated/tiger/` (50 images)
-   - `dataset/curated/lion/` (50 images)
-   - `dataset/curated/elephant/` (50 images)
-   - `dataset/curated/chital/` (50 images)
-2. Run DataLoader validation: `python scripts/validate_dataloaders.py`.
+The dataset comprises 200 curated wildlife observations across four species: **Tiger** (*Panthera tigris*), **Lion** (*Panthera leo*), **Asian Elephant** (*Elephas maximus*), and **Chital** (*Axis axis*).
 
 ### Dataset Distribution
 
-| Species | Train (70%) | Validation (15%) | Test (15%) | Total Curated | Licence Share |
+| Species | Train (70%) | Validation (15%) | Test (15%) | Total Curated | License Share |
 |---|:---:|:---:|:---:|:---:|:---:|
-| **Tiger** (*Panthera tigris*) | 35 | 7 | 8 | 50 | CC-BY (91%) / CC-BY-SA (9%) |
-| **Lion** (*Panthera leo*) | 35 | 8 | 7 | 50 | CC-BY (91%) / CC-BY-SA (9%) |
-| **Asian Elephant** (*Elephas maximus*) | 35 | 7 | 8 | 50 | CC-BY (91%) / CC-BY-SA (9%) |
-| **Chital** (*Axis axis*) | 35 | 8 | 7 | 50 | CC-BY (91%) / CC-BY-SA (9%) |
+| **Tiger** | 35 | 7 | 8 | 50 | CC-BY (91%) / CC-BY-SA (9%) |
+| **Lion** | 35 | 8 | 7 | 50 | CC-BY (91%) / CC-BY-SA (9%) |
+| **Asian Elephant** | 35 | 7 | 8 | 50 | CC-BY (91%) / CC-BY-SA (9%) |
+| **Chital** | 35 | 8 | 7 | 50 | CC-BY (91%) / CC-BY-SA (9%) |
 | **Total** | **140** | **30** | **30** | **200** | **100% Balanced** |
 
-- **Duplicate / Leakage Audit**: 0 cross-split duplicates, 0 byte-level duplicates. 1 documented near-duplicate Tiger pair isolated within train split.
-- **Vocabulary**: 158 words fitted strictly on training split (`dataset/vocabulary.json`). Held-out OOV rate: 3.8%.
+### Preprocessing Pipelines
+- **Visual Standardization (`preprocessing/image_preprocessing.py`):**
+  1. Auto-rotation via `PIL.ImageOps.exif_transpose` for sensor orientation.
+  2. RGB channel enforcement (strips alpha, expands grayscale).
+  3. Aspect-preserving resize with symmetric black letterboxing to $224 \times 224$.
+  4. Conversion to Float32 $[0.0, 1.0]$ with ImageNet mean/std normalization.
+- **Text Standardization (`preprocessing/text_preprocessing.py`):**
+  1. Lowercased alphanumeric cleaning removing punctuation.
+  2. Vocabulary mapping with special tokens (`<PAD>: 0`, `<UNK>: 1`, `<BOS>: 2`, `<EOS>: 3`).
+  3. Sequence standardization to fixed length $L=32$ tokens.
+  4. Built strictly on the training split ($N=140$) to prevent data leakage.
+
+### Dataset Archives on Google Drive
+Image binary files are hosted separately on Google Drive to keep the repository lightweight:
+- [**Download WildMatch AI Dataset on Google Drive**](https://drive.google.com/drive/folders/13XJRsQHok8HqZi3kYecnlEcWoTWI4gVY?usp=sharing)
+- Extract `wildmatch_curated_dataset.zip` into `dataset/curated/` (`tiger/`, `lion/`, `elephant/`, `chital/`).
+
+---
+
+## 3. Member 2: Dual-Encoder Neural Architecture
+
+Member 2 designed the custom dual-encoder architecture (`models/dual_encoder.py`) mapping images and text into a shared 256-dimensional semantic space:
+
+- **Custom CNN Image Encoder (`models/image_encoder.py`):** 4-stage convolutional backbone (32 $\to$ 64 $\to$ 128 $\to$ 256 channels), adaptive average pooling, and 2-layer MLP projection head (520K parameters).
+- **BiLSTM Text Encoder (`models/text_encoder.py`):** Word embedding ($158 \to 128$), single-layer bidirectional LSTM ($128$ hidden per direction), padding-aware masked mean pooling, and 2-layer MLP projection head (416K parameters).
+- **Dual Encoder (`models/dual_encoder.py`):** Composes image and text branches with learnable temperature scaling parameter `logit_scale` initialized to $\ln(1 / 0.07) \approx 2.6593$.
+
+Full architectural specifications are detailed in [**`docs/MODEL_ARCHITECTURE.md`**](docs/MODEL_ARCHITECTURE.md).
+
+---
+
+## 4. Member 3: Contrastive Learning & Model Training
+
+Member 3 developed the training objectives, contrastive losses, auxiliary species supervision, and model training pipeline.
+
+### 4.1 Contrastive Loss Modules (`training/loss.py`)
+1. **Symmetric Contrastive Loss (`SymmetricContrastiveLoss`):**
+   Standard bidirectional InfoNCE / NT-Xent:
+   $$\mathcal{L}_{\text{sym}} = \frac{1}{2} \left( \mathcal{L}_{v \to t} + \mathcal{L}_{t \to v} \right)$$
+   Where each direction is categorical cross-entropy against diagonal ground-truth identity targets scaled by temperature $\tau$.
+2. **Species-Aware Multi-Positive Contrastive Loss (`SpeciesAwareMultiPositiveContrastiveLoss`):**
+   Mitigates the false negative penalty of standard InfoNCE by treating all in-batch pairs sharing the same species label as positive pairs:
+   $$\mathcal{L}_{\text{multi-pos}}^{(v \to t)} = -\frac{1}{B} \sum_{i=1}^B \frac{1}{|P(i)|} \sum_{p \in P(i)} \log \frac{\exp(\mathbf{v}_i \cdot \mathbf{t}_p / \tau)}{\sum_{k=1}^B \exp(\mathbf{v}_i \cdot \mathbf{t}_k / \tau)}$$
+3. **Auxiliary Species Supervision (`AuxiliaryClassificationLoss`):**
+   Linear classification heads on 256-d embeddings (`Linear(256 -> 4)`) trained with cross-entropy loss:
+   $$\mathcal{L}_{\text{aux}} = \frac{1}{2} \left( \text{CE}(\hat{\mathbf{y}}_v, \mathbf{y}) + \text{CE}(\hat{\mathbf{y}}_t, \mathbf{y}) \right)$$
+4. **Unified Objective (`WildMatchLoss`):**
+   $$\mathcal{L}_{\text{total}} = \mathcal{L}_{\text{contrastive}} + \lambda_{\text{aux}} \mathcal{L}_{\text{aux}}, \quad \lambda_{\text{aux}} = 0.5$$
+
+### 4.2 End-to-End Training Pipeline (`training/train.py`)
+- **Optimizer:** AdamW with differential learning rates ($\eta_{\text{backbone}} = 10^{-5}$, $\eta_{\text{heads}} = 2 \times 10^{-4}$, weight decay $10^{-4}$).
+- **Scheduler:** `ReduceLROnPlateau` monitoring validation species Recall@1.
+- **Checkpoints:** Saves best checkpoint (`wildmatch_v3_best.pth`), delivery models (`wildmatch_v3_dual_encoder.pth`, `wildmatch_v3_species_heads.pth`), and full training history CSV/JSON.
+
+```powershell
+# Run model training from CLI
+python training/train.py --epochs 35 --batch-size 16 --lr-backbone 1e-5 --lr-heads 2e-4
+```
+
+### 4.3 Training Results & Benchmark Metrics (Held-Out Test Set, $N=30$)
+
+| Evaluation Metric | Exact Match Paradigm | Species-Level Semantic Paradigm |
+|---|:---:|:---:|
+| **Text-to-Image Recall@1** | 16.67% (5/30) | **100.00%** (30/30) |
+| **Text-to-Image Recall@5** | 66.67% (20/30) | **100.00%** (30/30) |
+| **Text-to-Image Recall@10** | 96.67% (29/30) | **100.00%** (30/30) |
+| **Text-to-Image MRR** | 0.3650 | **1.0000** |
+| **Image-to-Text Recall@1** | 16.67% (5/30) | **83.33%** (25/30) |
+| **Image-to-Text Recall@5** | 53.33% (16/30) | **90.00%** (27/30) |
+| **Image-to-Text Recall@10** | 90.00% (27/30) | **100.00%** (30/30) |
+| **Image-to-Text MRR** | 0.3465 | **0.8792** |
+| **Bimodal Average Recall@1** | 16.67% | **91.67%** |
+| **Bimodal Average Recall@5** | 60.00% | **95.00%** |
+| **Bimodal Average Recall@10** | 93.33% | **100.00%** |
+| **Bimodal Average MRR** | 0.3557 | **0.9396** |
+| **Image Classifier Accuracy** | — | **86.67%** (26/30) |
+| **Text Classifier Accuracy** | — | **100.00%** (30/30) |
+| **Species Separation Margin** | — | **+0.6158** (Same: +0.429, Diff: -0.187) |
+
+---
+
+## 5. Member 4: Retrieval Engine, Evaluation Suite & Gradio App
+
+Member 4 delivered the downstream similarity matching, evaluation benchmark suite, and interactive web application.
+
+### 5.1 Retrieval Engine (`retrieval.py`)
+- **`calculate_cosine_similarity`:** Numerically clamped dot product on unit $L_2$-normalized vectors.
+- **`WildMatchRetriever`:** Offline vector gallery indexer supporting split filtering (`train`, `validation`, `test`, `all`) and biological species filtering.
+- **Bidirectional Endpoints:** `retrieve_images_by_text()` and `retrieve_texts_by_image()`.
+- **Cross-Modal Pair Scorer:** `score_image_text_pair()` providing cosine similarity and dual-branch species prediction probabilities.
+
+```powershell
+# Run retrieval query from CLI
+python retrieval.py --split test --query "a tiger resting near shallow water" --top-k 5
+```
+
+### 5.2 Evaluation Suite (`evaluation.py`)
+Computes comprehensive quantitative benchmarks across splits:
+- Recall@1, Recall@5, Recall@10, Mean Reciprocal Rank (MRR), Mean First Rank.
+- Per-species breakdown, similarity margins, and auxiliary classification accuracies.
+- Exports structured evaluation JSON reports.
+
+```powershell
+# Run full evaluation benchmark
+python evaluation.py --split test --save-json docs/member4_evaluation_results.json
+```
+
+### 5.3 Interactive Gradio Application (`app.py`)
+A production-ready web application providing 4 functional interfaces:
+
+1. **Text-to-Image Retrieval Tab:** Natural language query input, Top-K slider (1-10), species filter dropdown, gallery display with similarity scores, and metadata inspection table.
+2. **Image-to-Text Retrieval Tab:** Wildlife image uploader with sample test buttons, predicted image species probabilities, and Top-K ranked descriptive captions.
+3. **Pair Similarity Scorer Tab:** Multi-modal pair evaluation showing visual cosine similarity meter, match assessment banner, and dual species predictions.
+4. **Evaluation & Analytics Dashboard:** Split performance KPIs, aggregate retrieval metrics, per-species breakdown table, training loss curves, and test confusion matrices.
+
+```powershell
+# Launch Gradio web application locally
+python app.py
+
+# Launch with temporary public share link
+python app.py --share
+```
 
 ---
 
@@ -292,87 +204,119 @@ Image binary files are hosted separately on Google Drive to keep the git reposit
 
 ```text
 WildMatch_AI/
-├── .gitignore
-├── README.md                             # Comprehensive project documentation
-├── requirements.txt                      # Project dependencies (Python 3.9+)
-├── docs/
-│   ├── MODEL_ARCHITECTURE.md             # Member 2 architecture specification & handoff
-│   └── MEMBER2_HANDOFF_CLARIFICATION.md  # Architectural status & downstream training handoff guide
-├── models/                               # Member 2: Deep Learning Neural Architectures
-│   ├── __init__.py                       # Package exports (ImageEncoder, TextEncoder, DualEncoder)
-│   ├── image_encoder.py                  # Custom 4-stage CNN visual feature extractor
-│   ├── text_encoder.py                   # BiLSTM caption encoder with masked pooling
-│   └── dual_encoder.py                   # Unified multimodal dual encoder & calibration
-├── tests/                                # Comprehensive Unit Test Suites
-│   ├── __init__.py
-│   ├── test_image_encoder.py             # 7 unit tests for ImageEncoder
-│   ├── test_text_encoder.py              # 9 unit tests for TextEncoder
-│   └── test_dual_encoder.py              # 9 unit tests for DualEncoder
-├── dataset/                              # Member 1: Multimodal Data Ingestion Pipeline
-│   ├── dataloader.py                     # PyTorch DataLoader factory
-│   ├── wildlife_dataset.py               # PyTorch WildlifeDataset implementation
-│   ├── vocabulary.json                   # 158-token training vocabulary
-│   ├── metadata.csv                      # Raw collection metadata (280 records)
-│   ├── collection_report.csv             # API harvest report
-│   ├── captions/
-│   │   ├── pilot_captions.csv            # 200 BLIP and reviewed captions
-│   │   └── processed_captions.csv        # Cleaned captions & tokens
-│   ├── curation/
-│   │   ├── curation_status.csv           # Curation decisions
-│   │   └── README.md                     # Curation documentation
-│   ├── splits/
-│   │   ├── train.csv                     # 140 training pairs
-│   │   ├── validation.csv                # 30 validation pairs
-│   │   ├── test.csv                      # 30 test pairs
-│   │   └── split_manifest.csv            # Assignment manifest
-│   └── curated/                          # Extracted from wildmatch_curated_dataset.zip
-│       ├── tiger/ (50 images)
-│       ├── lion/ (50 images)
-│       ├── elephant/ (50 images)
-│       └── chital/ (50 images)
-├── preprocessing/                        # Member 1: Data Preparation Modules
-│   ├── collect_inaturalist.py            # iNaturalist API collector
-│   ├── curate_dataset.py                 # Visual contact sheet curation
-│   ├── finalize_expansion_curated.py     # Dataset sync utility
-│   ├── generate_captions.py              # BLIP caption generator
-│   ├── image_preprocessing.py            # Aspect-preserving standardizer [3, 224, 224]
-│   └── text_preprocessing.py             # Caption cleaner & tokenizer (len=32)
-└── scripts/                              # Verification, Validation & Build Utilities
-    ├── verify_member2_models.py          # Master 5-stage Member 2 verification suite
-    ├── verify_image_encoder.py           # ImageEncoder profiling & invariant checks
-    ├── verify_text_encoder.py            # TextEncoder profiling & invariant checks
-    ├── verify_dual_encoder.py            # DualEncoder profiling & invariant checks
-    ├── validate_dataloaders.py           # Member 1 15-point DataLoader validation
-    ├── split_dataset.py                  # Stratified train/val/test splitter
-    └── build_vocabulary.py               # Training-only vocabulary builder
+├── .gitignore                             # Git exclusion specifications
+├── README.md                              # Comprehensive project documentation
+├── requirements.txt                       # Project dependencies
+├── app.py                                 # Member 4: Interactive Gradio web application
+├── retrieval.py                           # Member 4: Multimodal retrieval engine
+├── evaluation.py                          # Member 4: Evaluation & metrics suite
+├── training/                              # Member 3: Training & Contrastive Loss Package
+│   ├── __init__.py                        # Package exports
+│   ├── loss.py                            # Symmetric & Multi-Positive InfoNCE loss
+│   └── train.py                           # End-to-end model training pipeline
+├── models/                                # Deep Learning Architectures & Checkpoints
+│   ├── __init__.py                        # Model exports & version loaders
+│   ├── image_encoder.py                   # Member 2: Custom CNN visual feature extractor
+│   ├── text_encoder.py                    # Member 2: BiLSTM caption encoder
+│   ├── dual_encoder.py                    # Member 2: Calibrated dual encoder
+│   ├── wildmatch_v3.py                    # Member 3: Version 3 ResNet-18 + BiLSTM
+│   ├── inference.py                       # Member 3: High-level inference utilities
+│   ├── wildmatch_v3_dual_encoder.pth      # Member 3: Trained dual encoder weights (45.8 MB)
+│   ├── wildmatch_v3_species_heads.pth     # Member 3: Trained auxiliary classification heads
+│   ├── wildmatch_v3_vocabulary.json       # 158-word vocabulary mapping
+│   ├── wildmatch_v3_metrics.json          # Test split benchmark metrics
+│   ├── wildmatch_v3_history.json          # 34-epoch training loss history
+│   ├── wildmatch_v3_loss.png              # Training and validation loss curves
+│   └── wildmatch_v3_validation.png        # Validation Recall@1 curve
+├── dataset/                               # Member 1: Multimodal Data Ingestion Pipeline
+│   ├── dataloader.py                      # PyTorch DataLoader factory
+│   ├── wildlife_dataset.py                # PyTorch WildlifeDataset implementation
+│   ├── vocabulary.json                    # 158-token training vocabulary
+│   ├── metadata.csv                       # Curated dataset metadata (200 records)
+│   ├── splits/                            # Stratified dataset split manifests
+│   │   ├── train.csv                      # 140 training pairs
+│   │   ├── validation.csv                 # 30 validation pairs
+│   │   └── test.csv                       # 30 test pairs
+│   └── curated/                           # Curated wildlife images (50/species)
+├── preprocessing/                         # Member 1: Data Preparation Modules
+│   ├── image_preprocessing.py             # Aspect-preserving standardizer [3, 224, 224]
+│   └── text_preprocessing.py              # Caption cleaner & tokenizer (len=32)
+├── tests/                                 # Unit & Integration Test Suites
+│   ├── test_dual_encoder.py               # 9 tests for DualEncoder
+│   ├── test_image_encoder.py              # 7 tests for ImageEncoder
+│   ├── test_text_encoder.py               # 9 tests for TextEncoder
+│   ├── test_v3_inference.py               # 5 tests for Version 3 inference
+│   ├── test_training.py                   # 8 tests for contrastive losses & optimizer
+│   └── test_member4_retrieval_eval.py     # Member 4 retrieval, evaluation, and UI tests
+├── docs/                                  # Technical Reports & Architecture Documentation
+│   ├── MODEL_ARCHITECTURE.md              # Member 2 architecture specifications
+│   ├── MEMBER3_TECHNICAL_REPORT.md        # Member 3 training & loss formulation report
+│   └── member4_evaluation_results.json    # Full test split evaluation benchmark
+└── scripts/                               # Reproducibility & Verification Scripts
+    ├── sample_inference.py                # Quick terminal inference demonstration
+    ├── test_v3_reproducibility.py         # Version 3 metric reproducibility script
+    ├── validate_dataloaders.py            # Member 1 DataLoader validation
+    └── verify_member2_models.py           # Member 2 architecture verification
 ```
 
 ---
 
-## 7. Quick Command Reference
+## 7. Execution Guide: Windows 11 & Google Colab
+
+### 7.1 Local Windows 11 Environment
 
 ```powershell
-# Install project dependencies
+# 1. Clone repository and navigate to workspace
+cd "d:\College\Deep Learning\WildMatch_AI"
+
+# 2. Install dependencies
 pip install -r requirements.txt
 
-# Run all Member 2 unit tests
+# 3. Run all unit tests (All test suites pass)
 python -m unittest discover tests -v
 
-# Run Member 2 Master Verification Suite
-python scripts/verify_member2_models.py
+# 4. Run sample terminal inference demo (No images required)
+python scripts/sample_inference.py
 
-# Run Member 1 DataLoader Validation Suite
-python scripts/validate_dataloaders.py
+# 5. Execute model training pipeline (Optional)
+python training/train.py --epochs 35 --batch-size 16
 
-# Run Member 4 Retrieval Demo & Evaluation Suite
-python retrieval.py --split test --top-k 5
-python evaluation.py --split test --save-json docs/member4_evaluation_results.json
-
-# Launch Member 4 Interactive Gradio Application
+# 6. Launch the Gradio web application
 python app.py
 ```
 
+### 7.2 Google Colab (Free GPU / T4)
+
+```python
+# 1. Clone the repository
+!git clone https://github.com/<your-username>/WildMatch_AI.git
+%cd WildMatch_AI
+
+# 2. Install dependencies
+!pip install -r requirements.txt
+
+# 3. Run test suite
+!python -m unittest discover tests -v
+
+# 4. Launch Gradio with public shareable URL
+!python app.py --share
+```
+
 ---
 
-*Last Updated: 2026-11-08*  
-*Contributors: WildMatch AI Team (Members 1, 2, 3, 4)*
+## 8. Limitations & Future Enhancements
+
+### Limitations
+1. **Curated Vocabulary Size (158 tokens):** While effective for specific wildlife species and environmental contexts, out-of-vocabulary words in user queries map to `<UNK>`.
+2. **Species Scope (4 Classes):** Optimized for four flagship species (Tiger, Lion, Asian Elephant, Chital). Unseen species require additional curated data.
+3. **Exact-Pair vs. Semantic Multi-Positive Retrieval:** Due to multiple images sharing similar captions per species, semantic species retrieval is exceptionally high (100% Recall@1), whereas exact identity matching operates within a multi-candidate set.
+
+### Future Enhancements
+- Expand species taxonomy to 20+ terrestrial mammals using hierarchical species supervision.
+- Incorporate subword BPE tokenization (WordPiece or Byte-Pair Encoding) to eliminate `<UNK>` occurrences.
+- Integrate FAISS vector index for real-time sub-millisecond retrieval on large-scale galleries (>100,000 images).
+
+---
+
+*Academic Final Submission: WildMatch AI Project Team (Members 1, 2, 3, 4)*  
+*Department of Computer Science & Engineering — Deep Learning Coursework*

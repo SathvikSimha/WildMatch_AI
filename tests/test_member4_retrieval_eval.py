@@ -12,7 +12,12 @@ import sys
 import unittest
 from pathlib import Path
 from PIL import Image
-import gradio as gr
+try:
+    import gradio as gr
+    HAS_GRADIO = True
+except ImportError:
+    gr = None
+    HAS_GRADIO = False
 import pandas as pd
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
@@ -27,7 +32,8 @@ from evaluation import (
     compute_retrieval_metrics,
     evaluate_retriever,
 )
-import app as wildmatch_app
+if HAS_GRADIO:
+    import app as wildmatch_app
 
 
 class TestMember4MetricsMath(unittest.TestCase):
@@ -77,6 +83,17 @@ class TestMember4MetricsMath(unittest.TestCase):
         self.assertAlmostEqual(bundle["mrr"], mrr, places=5)
 
 
+_TEST_CSV = PROJECT_ROOT / "dataset" / "splits" / "test.csv"
+def _check_test_images() -> bool:
+    if not _TEST_CSV.is_file():
+        return False
+    df = pd.read_csv(_TEST_CSV)
+    return all((PROJECT_ROOT / p).is_file() for p in df["image_path"])
+
+_HAS_IMAGES = _check_test_images()
+
+
+@unittest.skipUnless(_HAS_IMAGES, "complete test split dataset images not available locally")
 class TestMember4RetrievalAndEvaluation(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -146,7 +163,12 @@ class TestMember4RetrievalAndEvaluation(unittest.TestCase):
             self.assertIn(sp, ev["per_species"])
 
 
+@unittest.skipUnless(HAS_GRADIO and _HAS_IMAGES, "gradio and complete test images required")
 class TestMember4GradioApp(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.retriever = WildMatchRetriever(split="test")
+        wildmatch_app._RETRIEVER = cls.retriever
     def test_gradio_blocks_and_callbacks(self):
         demo = wildmatch_app.build_app()
         self.assertIsInstance(demo, gr.Blocks)

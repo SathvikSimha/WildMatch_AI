@@ -2,7 +2,7 @@
 # WildMatch AI - Git Ignore Specification
 # ==============================================================================
 
-# --- Python Bytecode & Cache ---
+# --- Python Bytecode & Runtime Cache ---
 __pycache__/
 *.py[cod]
 *$py.class
@@ -11,6 +11,7 @@ __pycache__/
 .coverage
 htmlcov/
 .mypy_cache/
+.ipynb_checkpoints/
 
 # --- Virtual Environments ---
 .venv/
@@ -73,14 +74,20 @@ checkpoints/
 !models/wildmatch_v3_dual_encoder.pth
 !models/wildmatch_v3_species_heads.pth
 
+# --- Web App & UI Runtime Artifacts (Gradio) ---
+flagged/
+.gradio/
+gradio_cached_examples/
 
-# --- Backups & Temporary Files ---
+# --- Logs, Backups & Temporary Files ---
+*.log
 *.bak
 *.bak_*
 *.tmp
 temp_*
 *.swp
 *.swo
+scratch/
 
 # --- IDEs & Developer Tooling ---
 .vscode/
@@ -99,7 +106,7 @@ ehthumbs.db
 Thumbs.db
 desktop.ini
 
-# --- Environment Configurations ---
+# --- Environment Configurations & Miscellaneous ---
 .env
 .env.local
 .env.*.local

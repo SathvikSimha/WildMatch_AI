@@ -39,16 +39,15 @@ APP_THEME = gr.themes.Soft(
     spacing_size=gr.themes.sizes.spacing_md,
     radius_size=gr.themes.sizes.radius_md,
     font=[
-        gr.themes.GoogleFont("Fira Sans"),
-        "ui-sans-serif",
+        "Segoe UI",
         "system-ui",
+        "-apple-system",
         "sans-serif",
     ],
     font_mono=[
-        gr.themes.GoogleFont("Fira Code"),
+        "Consolas",
         "ui-monospace",
         "SFMono-Regular",
-        "Consolas",
         "monospace",
     ],
 )
@@ -962,10 +961,7 @@ def build_app() -> gr.Blocks:
                         ["two chital deer grazing in the woods"],
                     ],
                     inputs=[t2i_query],
-                    outputs=[t2i_probs, t2i_status, t2i_gallery, t2i_table],
-                    fn=lambda q: run_text_to_image(q, 5, "all", "All"),
-                    run_on_click=True,
-                    label="Suggested In-Vocabulary Queries (Click to Run)",
+                    label="Suggested In-Vocabulary Queries (Click to Load)",
                 )
 
                 t2i_inputs = [t2i_query, t2i_topk, t2i_split, t2i_species]
@@ -1035,10 +1031,7 @@ def build_app() -> gr.Blocks:
                         examples=sample_images,
                         example_labels=sample_labels,
                         inputs=[i2t_image],
-                        outputs=[i2t_probs, i2t_status, i2t_table],
-                        fn=lambda img: run_image_to_text(img, 5, "all", "All"),
-                        run_on_click=True,
-                        label="Held-Out Test Set Samples (Click to Run)",
+                        label="Held-Out Test Set Samples (Click to Load)",
                     )
 
                 i2t_inputs = [i2t_image, i2t_topk, i2t_split, i2t_species]
