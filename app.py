@@ -38,18 +38,6 @@ APP_THEME = gr.themes.Soft(
     neutral_hue=gr.themes.colors.slate,
     spacing_size=gr.themes.sizes.spacing_md,
     radius_size=gr.themes.sizes.radius_md,
-    font=[
-        "Segoe UI",
-        "system-ui",
-        "-apple-system",
-        "sans-serif",
-    ],
-    font_mono=[
-        "Consolas",
-        "ui-monospace",
-        "SFMono-Regular",
-        "monospace",
-    ],
 )
 
 CUSTOM_CSS = """

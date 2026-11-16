@@ -61,7 +61,30 @@ WildMatch AI is an end-to-end multimodal deep learning system designed for biodi
 
 ---
 
-## 2. Member 1: Dataset Setup & Preprocessing
+## 2. System & Model Architecture Visualizations
+
+High-resolution visual diagrams and interactive documentation are provided in [`docs/`](docs/):
+
+| Architecture Diagram | Focus & Description | High-Resolution Asset |
+|---|---|:---:|
+| **Overall System Architecture** | End-to-end data ingestion, preprocessing, dual-encoder training, retrieval gallery indexing, and Gradio Web UI | [**docs/project_architecture.png**](docs/project_architecture.png) |
+| **Version 3 Model Architecture** | Dual-Encoder (Visual ResNet-18 + BiLSTM), 256-D $L_2$-normalized embedding space, InfoNCE Loss & Auxiliary Heads | [**docs/model_architecture.png**](docs/model_architecture.png) |
+
+<p align="center">
+  <img src="docs/project_architecture.png" alt="WildMatch AI System Architecture" width="850"/>
+</p>
+
+<p align="center">
+  <img src="docs/model_architecture.png" alt="WildMatch AI Model Architecture" width="850"/>
+</p>
+
+### Interactive Architecture Exploration
+- **Standalone Browser Viewer:** Open [`docs/architecture_viewer.html`](docs/architecture_viewer.html) in any browser (Chrome, Edge, Firefox) for an interactive, zoomable vector view with an instant **"Print / Save as PDF"** feature.
+- **Mermaid & Mathematical Formulations:** See [`docs/ARCHITECTURE_DIAGRAMS.md`](docs/ARCHITECTURE_DIAGRAMS.md) for raw Mermaid source markup, mathematical formulations, and component breakdowns.
+
+---
+
+## 3. Member 1: Dataset Setup & Preprocessing
 
 The dataset comprises 200 curated wildlife observations across four species: **Tiger** (*Panthera tigris*), **Lion** (*Panthera leo*), **Asian Elephant** (*Elephas maximus*), and **Chital** (*Axis axis*).
 
@@ -94,7 +117,7 @@ Image binary files are hosted separately on Google Drive to keep the repository 
 
 ---
 
-## 3. Member 2: Dual-Encoder Neural Architecture
+## 4. Member 2: Dual-Encoder Neural Architecture
 
 Member 2 designed the custom dual-encoder architecture (`models/dual_encoder.py`) mapping images and text into a shared 256-dimensional semantic space:
 
@@ -106,7 +129,7 @@ Full architectural specifications are detailed in [**`docs/MODEL_ARCHITECTURE.md
 
 ---
 
-## 4. Member 3: Contrastive Learning & Model Training
+## 5. Member 3: Contrastive Learning & Model Training
 
 Member 3 developed the training objectives, contrastive losses, auxiliary species supervision, and model training pipeline.
 
@@ -156,7 +179,7 @@ python training/train.py --epochs 35 --batch-size 16 --lr-backbone 1e-5 --lr-hea
 
 ---
 
-## 5. Member 4: Retrieval Engine, Evaluation Suite & Gradio App
+## 6. Member 4: Retrieval Engine, Evaluation Suite & Gradio App
 
 Member 4 delivered the downstream similarity matching, evaluation benchmark suite, and interactive web application.
 
@@ -200,7 +223,7 @@ python app.py --share
 
 ---
 
-## 6. Repository Structure
+## 7. Repository Structure
 
 ```text
 WildMatch_AI/
@@ -249,9 +272,17 @@ WildMatch_AI/
 │   ├── test_training.py                   # 8 tests for contrastive losses & optimizer
 │   └── test_member4_retrieval_eval.py     # Member 4 retrieval, evaluation, and UI tests
 ├── docs/                                  # Technical Reports & Architecture Documentation
+│   ├── ARCHITECTURE_DIAGRAMS.md           # Mermaid & ASCII system & model diagrams
+│   ├── architecture_viewer.html           # Interactive standalone browser viewer (Export to PDF)
+│   ├── project_architecture.png           # High-resolution system pipeline diagram
+│   ├── model_architecture.png             # High-resolution dual-encoder architecture diagram
 │   ├── MODEL_ARCHITECTURE.md              # Member 2 architecture specifications
 │   ├── MEMBER3_TECHNICAL_REPORT.md        # Member 3 training & loss formulation report
-│   └── member4_evaluation_results.json    # Full test split evaluation benchmark
+│   ├── member4_evaluation_results.json    # Full test split evaluation benchmark
+│   ├── wildmatch_v3_loss.png              # Training and validation loss curves
+│   ├── wildmatch_v3_validation.png        # Validation Recall@1 curve
+│   ├── wildmatch_v3_image_confusion.png   # Image classifier test confusion matrix
+│   └── wildmatch_v3_text_confusion.png    # Text classifier test confusion matrix
 └── scripts/                               # Reproducibility & Verification Scripts
     ├── sample_inference.py                # Quick terminal inference demonstration
     ├── test_v3_reproducibility.py         # Version 3 metric reproducibility script
@@ -261,7 +292,7 @@ WildMatch_AI/
 
 ---
 
-## 7. Execution Guide: Windows 11 & Google Colab
+## 8. Execution Guide: Windows 11 & Google Colab
 
 ### 7.1 Local Windows 11 Environment
 
@@ -304,7 +335,7 @@ python app.py
 
 ---
 
-## 8. Limitations & Future Enhancements
+## 9. Limitations & Future Enhancements
 
 ### Limitations
 1. **Curated Vocabulary Size (158 tokens):** While effective for specific wildlife species and environmental contexts, out-of-vocabulary words in user queries map to `<UNK>`.

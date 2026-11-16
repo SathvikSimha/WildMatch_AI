@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>WildMatch AI — Architecture Diagrams</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --border: #334155;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #10b981;
+      --primary-hover: #059669;
+    }
+    body {
+      margin: 0;
+      padding: 2rem;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    .header {
+      max-width: 1200px;
+      margin: 0 auto 2rem auto;
+      text-align: center;
+    }
+    .header h1 {
+      margin: 0 0 0.5rem 0;
+      font-size: 2rem;
+      color: var(--primary);
+    }
+    .header p {
+      color: var(--text-muted);
+      margin: 0;
+    }
+    .actions {
+      margin-top: 1rem;
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+    }
+    button {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 0.6rem 1.2rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.95rem;
+      transition: background 0.2s;
+    }
+    button:hover {
+      background: var(--primary-hover);
+    }
+    .card {
+      max-width: 1200px;
+      margin: 0 auto 2.5rem auto;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+      overflow-x: auto;
+    }
+    .card h2 {
+      margin-top: 0;
+      color: #38bdf8;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.5rem;
+    }
+    .mermaid {
+      display: flex;
+      justify-content: center;
+      padding: 1rem 0;
+    }
+    @media print {
+      body { background: #fff; color: #000; padding: 0; }
+      .card { background: #fff; border: 1px solid #ccc; box-shadow: none; break-inside: avoid; }
+      .actions { display: none; }
+      .header h1 { color: #000; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h1>WildMatch AI — System & Model Architecture</h1>
+    <p>Fine-Grained Wildlife Image-Text Semantic Matching & Retrieval</p>
+    <div class="actions">
+      <button onclick="window.print()">🖨️ Print / Save as PDF</button>
+    </div>
+  </div>
+
+  <div class="card" id="project-card">
+    <h2>1. End-to-End System & Project Pipeline</h2>
+    <div class="mermaid">
+flowchart TD
+    subgraph M1["MEMBER 1: Dataset Collection & Preprocessing"]
+        INAT["iNaturalist API Harvest<br/>(CC-BY / CC-BY-SA)"]
+        CUR["200 Curated Wildlife Images<br/>(50 Tiger, 50 Lion, 50 Elephant, 50 Chital)"]
+        BLIP["BLIP Captioning &<br/>Manual Annotation Review"]
+        SPLIT["Stratified Splitting (70/15/15)<br/>Train: 140 | Val: 30 | Test: 30"]
+        VOCAB["158-Word Vocabulary<br/>(Fitted strictly on Train Split)"]
+        IMG_PRE["Image Preprocessor<br/>EXIF Transpose + RGB +<br/>Letterbox Pad to 224x224 + ImageNet Norm"]
+        TXT_PRE["Text Preprocessor<br/>Clean + Lowercase + Tokenize<br/>(PAD=0, UNK=1, BOS=2, EOS=3, L=32)"]
+        DLOADER["PyTorch DataLoader API<br/>WildlifeDataset + create_dataloaders()"]
+
+        INAT --> CUR --> BLIP --> SPLIT
+        SPLIT --> VOCAB
+        SPLIT --> IMG_PRE --> DLOADER
+        VOCAB --> TXT_PRE --> DLOADER
+    end
+
+    subgraph M23["MEMBERS 2 & 3: Dual-Encoder Architecture & Contrastive Training"]
+        IMG_BATCH["Image Tensors<br/>[B, 3, 224, 224]"]
+        TXT_BATCH["Caption Tokens<br/>[B, 32]"]
+        
+        DLOADER -.->|Mini-batching| IMG_BATCH
+        DLOADER -.->|Mini-batching| TXT_BATCH
+
+        IMG_ENC["ResNet-18 Image Encoder<br/>(models/wildmatch_v3.py)<br/>512-d Visual Features"]
+        TXT_ENC["BiLSTM Text Encoder<br/>(models/wildmatch_v3.py)<br/>128-d Word Emb + Masked Pooling"]
+
+        IMG_PROJ["Visual Projection MLP<br/>512 -> 512 -> 256 + L2 Norm"]
+        TXT_PROJ["Text Projection MLP<br/>256 -> 256 -> 256 + L2 Norm"]
+
+        IMG_VEC["Visual Embedding v<br/>[B, 256] on Unit Sphere S^255"]
+        TXT_VEC["Text Embedding t<br/>[B, 256] on Unit Sphere S^255"]
+
+        IMG_BATCH --> IMG_ENC --> IMG_PROJ --> IMG_VEC
+        TXT_BATCH --> TXT_ENC --> TXT_PROJ --> TXT_VEC
+
+        LOSS_MOD["training/loss.py<br/>• Symmetric InfoNCE Loss<br/>• Species-Aware Multi-Positive Loss<br/>• Auxiliary Classification Loss"]
+        TRAIN_PIPE["training/train.py<br/>• AdamW (lr_bb=1e-5, lr_heads=2e-4)<br/>• ReduceLROnPlateau Scheduler<br/>• 35 Epochs Optimization"]
+
+        IMG_VEC --> LOSS_MOD
+        TXT_VEC --> LOSS_MOD
+        LOSS_MOD --> TRAIN_PIPE
+
+        CKPT["Trained Checkpoints<br/>models/wildmatch_v3_dual_encoder.pth (45.8 MB)<br/>models/wildmatch_v3_species_heads.pth"]
+        TRAIN_PIPE --> CKPT
+    end
+
+    subgraph M4["MEMBER 4: Retrieval Engine, Evaluation & Interactive App"]
+        CKPT -.->|Load Weights| RETRIEVER
+        
+        RETRIEVER["retrieval.py (WildMatchRetriever)<br/>• Precomputed Gallery Vector Indexing<br/>• Cosine Similarity Matrix: S = v · t^T<br/>• Top-K Candidate Ranking"]
+        
+        EVAL["evaluation.py (Evaluation Suite)<br/>• Recall@1, Recall@5, Recall@10<br/>• Mean Reciprocal Rank (MRR)<br/>• Exact-Match & Species-Level Metrics"]
+
+        RETRIEVER --> EVAL
+
+        GRADIO["app.py (Gradio Web Application)<br/>• Tab 1: Text-to-Image Semantic Search<br/>• Tab 2: Image-to-Text Description Retrieval<br/>• Tab 3: Cross-Modal Pair Similarity Scorer<br/>• Tab 4: Performance & Analytics Dashboard"]
+
+        RETRIEVER --> GRADIO
+        EVAL --> GRADIO
+    end
+    </div>
+  </div>
+
+  <div class="card" id="model-card">
+    <h2>2. Detailed Model Architecture (Version 3 Dual-Encoder)</h2>
+    <div class="mermaid">
+flowchart LR
+    subgraph VisualStream["Visual Encoding Branch (ResNet-18 Backbone)"]
+        direction TB
+        IMG_IN["Input Image<br/>[B, 3, 224, 224]"] --> CONV1["Conv1 + BN + ReLU + MaxPool<br/>7x7 Conv (stride 2) -> [B, 64, 56, 56]"]
+        CONV1 --> L1["Layer 1 (2 BasicBlocks)<br/>64-ch, stride 1 -> [B, 64, 56, 56]"]
+        L1 --> L2["Layer 2 (2 BasicBlocks)<br/>128-ch, stride 2 -> [B, 128, 28, 28]"]
+        L2 --> L3["Layer 3 (2 BasicBlocks)<br/>256-ch, stride 2 -> [B, 256, 14, 14]"]
+        L3 --> L4["Layer 4 (2 BasicBlocks)<br/>512-ch, stride 2 -> [B, 512, 7, 7]"]
+        L4 --> GAP["AdaptiveAvgPool2d((1, 1)) + Flatten<br/>[B, 512]"]
+        GAP --> IMG_MLP["Projection Head (2-layer MLP)<br/>Linear(512 -> 512) -> ReLU -> Dropout(0.1)<br/>Linear(512 -> 256)"]
+        IMG_MLP --> IMG_NORM["L2 Normalization (dim=-1)<br/>||v||_2 = 1.0 -> [B, 256]"]
+    end
+
+    subgraph TextStream["Textual Encoding Branch (BiLSTM Backbone)"]
+        direction TB
+        TXT_IN["Caption Token IDs<br/>[B, 32]"] --> EMB["Word Embedding Layer<br/>Embedding(158, 128, pad_idx=0)<br/>+ Dropout(0.1) -> [B, 32, 128]"]
+        EMB --> LSTM["Bidirectional LSTM<br/>1 Layer, hidden_size=128 per dir<br/>Output: [B, 32, 256]"]
+        LSTM --> POOL["Padding-Aware Masked Mean Pooling<br/>mask = (tokens != 0)<br/>h_pooled = sum(h * mask) / sum(mask)<br/>Output: [B, 256]"]
+        POOL --> TXT_MLP["Projection Head (2-layer MLP)<br/>Linear(256 -> 256) -> ReLU -> Dropout(0.1)<br/>Linear(256 -> 256)"]
+        TXT_MLP --> TXT_NORM["L2 Normalization (dim=-1)<br/>||t||_2 = 1.0 -> [B, 256]"]
+    end
+
+    subgraph JointSpace["Shared Latent Space S^255 & Multi-Task Losses"]
+        direction TB
+        IMG_NORM --> DOT["Cosine Similarity Matrix<br/>S = v · t^T  in [-1.0, 1.0]<br/>Shape: [B, B]"]
+        TXT_NORM --> DOT
+
+        DOT --> SCALE["Temperature Scaling<br/>scale = exp(clamp(logit_scale, max=ln(100)))<br/>Logits = scale * S"]
+
+        SCALE --> CONTRAST["Species-Aware Multi-Positive InfoNCE<br/>Groups all in-batch images and captions<br/>sharing identical species as positive pairs<br/>L_contrast = (L_v2t + L_t2v) / 2"]
+
+        IMG_NORM --> CLS_IMG["Auxiliary Image Classifier<br/>Linear(256 -> 4 Species)"]
+        TXT_NORM --> CLS_TXT["Auxiliary Text Classifier<br/>Linear(256 -> 4 Species)"]
+        
+        CLS_IMG --> AUX_LOSS["Auxiliary Cross-Entropy Loss<br/>L_aux = 0.5 * (CE_img + CE_txt)"]
+        CLS_TXT --> AUX_LOSS
+
+        CONTRAST --> TOTAL_LOSS["Total Joint Training Objective<br/>L_total = L_contrast + 0.5 * L_aux"]
+        AUX_LOSS --> TOTAL_LOSS
+    end
+    </div>
+  </div>
+
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'dark',
+      themeVariables: {
+        darkMode: true,
+        background: '#1e293b',
+        primaryColor: '#10b981',
+        primaryTextColor: '#f8fafc',
+        primaryBorderColor: '#334155',
+        lineColor: '#38bdf8',
+        secondaryColor: '#f59e0b',
+        tertiaryColor: '#6366f1'
+      }
+    });
+  </script>
+</body>
+</html>
+
